@@ -50,12 +50,15 @@ declare module "cc" {
         scale_y: number;
         /** 获取、设置Z轴缩放 */
         scale_z: number;
+         /** 获取、设置xyz轴缩放 */
+        scale_xyz: number;
         /** 获取、设置节点的 X 欧拉角 */
         angle_x: number;
         /** 获取、设置节点的 Y 欧拉角 */
         angle_y: number;
         /** 获取、设置节点的 Z 欧拉角 */
         angle_z: number;
+        zIndex : number;
     }
 }
 
@@ -215,6 +218,40 @@ if (!EDITOR_NOT_IN_PREVIEW) {
         }
     });
 
+    /** 获取、设置节点的 zIndex 坐标 */
+    Object.defineProperty(Node.prototype, "zIndex", {
+        get: function () {
+            let self: any = this;
+            return self._zIndex;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            const siblings = this._parent._children;
+            const oldIndex = siblings.indexOf(this);
+            siblings.splice(oldIndex, 1);
+
+            let have = false
+            for(let i = 0;i < siblings.length;i++){
+                let zIndex = siblings[i]._zIndex || 0
+                if(zIndex > value){
+                    siblings.splice(i, 0, this);
+                    have = true
+                    break;
+                }
+            }
+
+            if(!have){
+                siblings.push(this);
+            }
+            this._zIndex = value;
+            this._parent._updateSiblingIndex();
+            // if (this._onSiblingIndexChanged) {
+            //     this._onSiblingIndexChanged(index);
+            // }
+            this._eventProcessor.onUpdatingSiblingIndex();
+        }
+    });
+
     /** 获取、设置节点的宽度 */
     Object.defineProperty(Node.prototype, "w", {
         configurable: true,
@@ -349,6 +386,20 @@ if (!EDITOR_NOT_IN_PREVIEW) {
             self.scale = v3(self.scale.x, self.scale.y, value);
         }
     });
+
+    /** 获取、设置节点的 Z 缩放系数 */
+    Object.defineProperty(Node.prototype, "scale_xyz", {
+        get: function () {
+            let self: Node = this;
+            return self.scale.x;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            self.scale = v3(value, value, value);
+        }
+    });
+
+    
 
     /** 获取、设置节点的水平锚点 */
     Object.defineProperty(Node.prototype, "anchor_x", {

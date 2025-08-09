@@ -14,6 +14,7 @@ export enum LayerType {
     Game = "LayerGame",
     /** 主界面层 */
     UI = "LayerUI",
+    Menu = "Menu",
     /** 弹窗层 */
     PopUp = "LayerPopUp",
     /** 模式窗口层 */

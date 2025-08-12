@@ -10,6 +10,7 @@ import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
+import { Toggle } from "cc";
 
 const { ccclass } = _decorator;
 
@@ -47,6 +48,11 @@ export class GameComponent extends Component {
         if (this._event == null) this._event = new EventDispatcher();
         return this._event;
     }
+
+    /**点击事件列表 */
+    private _registerEventList: Map<string, any> = new Map<string, Node>();
+    private canTouch: boolean = true;
+    private touchCd: number = 0.2;
 
     /**
      * 注册全局事件
@@ -368,7 +374,7 @@ export class GameComponent extends Component {
             if (!this.isValid) return;
 
             const rps = this.resPaths.get(ResType.Audio);
-            if (rps) {
+            if (rps && bundleName) {
                 const key = this.getResKey(bundleName, url);
                 rps.delete(key);
             }
@@ -412,16 +418,99 @@ export class GameComponent extends Component {
             const self: any = this;
             const func = self[node.name];
             if (func) {
-                const event = new EventHandler();
-                event.target = this.node;
-                event.handler = b.node.name;
-                event.component = this.name.match(regex)![1];
-                b.clickEvents.push(event);
+                // const event = new EventHandler();
+                // event.target = this.node;
+                // event.handler = b.node.name;
+                // event.component = this.name.match(regex)![1];
+                // b.clickEvents.push(event);
+
+                this.onRegisterEvent(b.node, func)
             }
             // else {
             //     console.warn(`名为【${node.name}】的按钮事件方法不存在`);
             // }
         });
+    }
+
+     /**
+     * 注册按钮点击事件
+     * @param node 
+     * @param callback 
+     * @param target 
+     * @param playAudio 是否播放音效，默认播放
+     */
+    onRegisterEvent(node: Node | undefined, callback: Function, playAudio = true, audioclip = true) {
+        if (!node) {
+            console.error("no node");
+            return;
+        }
+
+        let btn = node.getComponent(Button);
+        let toggle = node.getComponent(Toggle);
+
+        if (btn) {
+            btn.node.on("click", () => {
+                if (!this.canTouch) {
+                    return;
+                }
+
+                if (playAudio) {
+                    // oops.audio.playEffect('sound/btn_click');
+                }
+
+                this.canTouch = false;
+
+                this.scheduleOnce(() => {
+                    this.canTouch = true;
+                }, this.touchCd);
+
+                // if(WECHAT && oops.audio.zhendong){
+                //     wx.vibrateShort({
+                //         success: function () {
+                //         },
+                //         fail: function () {
+                //         }
+                //     })
+                // }
+
+                callback.call(this, btn);
+            }, this);
+
+            this._registerEventList.set(node.uuid, { node: node, type: "click" });
+        } else if (toggle) {
+
+            // let hd = new EventHandler();//copy对象
+            //     hd.component = event.component == "" ? this.EventHandler_component : event.component;
+            //     hd.handler = event.handler;
+            //     hd.target = event.target;
+            //     if (this.paramType === PARAM_TYPE.CHILDREN_INDEX) {
+            //         hd.customEventData = nodeIndex.toString();
+            //     }
+            //     else {
+            //         hd.customEventData = node.name;
+            //     }
+            //     comp.clickEvents.push(hd);
+
+            toggle.node.on("toggle", () => {
+                if (!this.canTouch) {
+                    return;
+                }
+                if (playAudio) {
+                    oops.audio.playEffect('music/ui_click');
+                }
+                this.canTouch = false;
+
+                this.scheduleOnce(() => {
+                    this.canTouch = true;
+                }, this.touchCd);
+
+                callback.call(this, toggle);
+            }, this);
+
+            this._registerEventList.set(node.uuid, { node: node, type: "toggle" });
+        } else {
+            console.error("not btn or toggle");
+        }
     }
 
     /**
@@ -515,6 +604,9 @@ export class GameComponent extends Component {
             this._event.destroy();
             this._event = null;
         }
+
+        //释放按钮点击事件
+        this._registerEventList.clear();
 
         // 节点引用数据清除
         if (this.nodes) {

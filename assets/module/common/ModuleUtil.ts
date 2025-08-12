@@ -78,6 +78,7 @@ export class ModuleUtil {
         const comp = node.getComponent(ctor)!;
         ent.add(comp);
         node.parent = parent;
+        return node;
     }
 
     /**

@@ -1,9 +1,6 @@
 /** 引擎 utils.ts 中有一些基础数学方法 */
 
-/** 
- * 随机管理 
- * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037911&doc_id=2873565
- */
+/** 随机管理 */
 export class RandomManager {
     private static _instance: RandomManager;
     private random: any = null!;
@@ -24,6 +21,21 @@ export class RandomManager {
 
     private getRandom(): number {
         return this.random();
+    }
+
+    /** 设置随机种子 */
+    setSeed(seed: number) {
+        //@ts-ignore
+        this.seedrandom = new Math.seedrandom(seed);
+    }
+
+    /**
+     * 是否触发概率
+     * @param num 概率0-1
+     * @returns 
+     */
+    isBingo(num: number): boolean{
+        return this.getRandom() <= num;
     }
 
     /**
@@ -66,6 +78,10 @@ export class RandomManager {
         return 0;
     }
 
+    getRandomBoolean() : Boolean {
+        return this.getRandomInt(0, 1) == 1
+    }
+
     /**
      * 根据最大值，最小值范围生成随机数数组
      * @param min   最小值
@@ -93,11 +109,11 @@ export class RandomManager {
     console.log("原始的对象", b);
     console.log("随机的对象", r);
      */
-    getRandomByObjectList<T>(objects: Array<T>, n: number): Array<T> {
+    getRandomByObjectList<T>(objects: Array<T>, n: number, type = 1): Array<T> {
         var temp: Array<T> = objects.slice();
         var result: Array<T> = [];
         for (let i = 0; i < n; i++) {
-            let index = this.getRandomInt(0, temp.length, 1);
+            let index = this.getRandomInt(0, temp.length, type);
             result.push(temp.splice(index, 1)[0]);
         }
         return result;
@@ -126,5 +142,65 @@ export class RandomManager {
             result.push(value);
         }
         return result;
+    }
+
+    // 从列表中选择
+    select(list: any[], num : number){
+        // 不修改原数组
+        list = list.slice().sort(() => {
+            return Math.random() > 0.5 ? 1 : -1
+        })
+
+        return list.slice(0, num)
+    }
+
+    selectOne(list : any[]){
+        let li = this.select(list, 1)
+        return li[0]
+    }
+
+    selectNumbers(min : number, max : number, num: number){
+        if (num > max - min + 1) {
+            throw new Error("m cannot be greater than n + 1");
+        }
+        
+        const result = new Set();
+        while (result.size < num) {
+            const num = this.getRandomInt(min, max)
+            result.add(num);
+        }
+        return Array.from(result);
+    }
+
+    // 随机打乱列表
+    luanxu(list: any[]) {
+        list = list.slice().sort(() => {
+            return Math.random() > 0.5 ? 1 : -1
+        })
+        return list
+    }
+
+    getSingleByWeight<T extends {weight: number}>(list: T[]) {
+        let sumW = 0
+        let range : number[] = []
+        list.forEach((cfg, i) => {
+            sumW += Number(cfg.weight)
+            if (i == 0) {
+                range.push(Number(cfg.weight))
+            } else {
+                range.push(range[range.length - 1] + Number(cfg.weight))
+            }
+
+        });
+
+        let idx = 0
+        let rdm = Math.floor(Math.random() * sumW)
+        for (let i = 0; i < range.length; i++) {
+            if (rdm < range[i]) {
+                idx = i
+                break;
+            }
+        }
+        return { cfg: list[idx], i: idx }
     }
 }

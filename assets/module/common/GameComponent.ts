@@ -88,11 +88,11 @@ export class GameComponent extends Component {
     nodes: Map<string, Node> = null!;
 
     /** 通过节点名获取预制上的节点，整个预制不能有重名节点 */
-    getNode(name: string): Node | undefined {
+    getNode(name: string): Node {//} | undefined {
         if (this.nodes) {
-            return this.nodes.get(name);
+            return this.nodes.get(name)!;
         }
-        return undefined;
+        return undefined!;
     }
 
     /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */

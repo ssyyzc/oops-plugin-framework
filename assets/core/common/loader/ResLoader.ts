@@ -1,4 +1,4 @@
-import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, error, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
+import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -73,34 +73,28 @@ export class ResLoader {
      * 加载远程资源
      * @param url           资源地址
      * @param options       资源参数，例：{ ext: ".png" }
-     * @param onComplete    加载完成回调
      * @example
-var opt: IRemoteOptions = { ext: ".png" };
-var onComplete = (err: Error | null, data: ImageAsset) => {
-    const texture = new Texture2D();
-    texture.image = data;
-    
-    const spriteFrame = new SpriteFrame();
-    spriteFrame.texture = texture;
-    
-    var sprite = this.sprite.addComponent(Sprite);
-    sprite.spriteFrame = spriteFrame;
-}
-oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
+        var opt: IRemoteOptions = { ext: ".png" };
+        var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
+        const texture = new Texture2D();
+        texture.image = data;
+
+        const spriteFrame = new SpriteFrame();
+        spriteFrame.texture = texture;
+
+        var sprite = this.sprite.addComponent(Sprite);
+        sprite.spriteFrame = spriteFrame;
      */
-    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null, onComplete?: CompleteCallback): void;
-    loadRemote<T extends Asset>(url: string, onComplete?: CompleteCallback): void;
-    loadRemote<T extends Asset>(url: string, ...args: any): void {
-        let options: IRemoteOptions | null = null;
-        let onComplete: CompleteCallback = null;
-        if (args.length == 2) {
-            options = args[0];
-            onComplete = args[1];
-        }
-        else {
-            onComplete = args[0];
-        }
-        assetManager.loadRemote<T>(url, options, onComplete);
+    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null = null): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            assetManager.loadRemote<T>(url, options, (err, data: T) => {
+                if (err) {
+                    reject(null);
+                    return;
+                }
+                resolve(data);
+            });
+        });
     }
     //#endregion
 
@@ -117,14 +111,16 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     /**
      * 加载资源包
      * @param name       资源地址
+     * @param options    资源参数，例：{ version: "74fbe" }
      * @example
-        await oops.res.loadBundle(name);
+        await oops.res.loadBundle(name, options);
      */
-    loadBundle(name: string) {
+    loadBundle(name: string, options: { [k: string]: any; version?: string; } | null = null): Promise<AssetManager.Bundle> {
         return new Promise<AssetManager.Bundle>((resolve, reject) => {
-            assetManager.loadBundle(name, (err, bundle: AssetManager.Bundle) => {
+            assetManager.loadBundle(name, options, (err, bundle: AssetManager.Bundle) => {
                 if (err) {
-                    return error(err);
+                    resolve(null!);
+                    return;
                 }
                 resolve(bundle);
             });

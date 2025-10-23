@@ -61,6 +61,7 @@ export abstract class CCEntity extends ecs.Entity {
         const comp = node.getComponent(ctor)!;
         this.add(comp);
         node.parent = parent;
+        return node
     }
 
     /**

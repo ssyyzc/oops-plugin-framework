@@ -426,7 +426,7 @@ export class GameComponent extends Component {
                 }
 
                 if (playAudio) {
-                    // oops.audio.playEffect('sound/btn_click');
+                    oops.audio.playEffect('sound/btn_click');
                 }
 
                 this.canTouch = false;

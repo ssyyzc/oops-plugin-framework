@@ -43,6 +43,8 @@ export interface UIConfig {
     safeArea?: boolean;
     /** 界面弹出时的节点排序索引 */
     siblingIndex?: number;
+    /** 是否有界面打开动画 */
+    ani?: boolean;
 }
 
 /** 游戏元素配置 */

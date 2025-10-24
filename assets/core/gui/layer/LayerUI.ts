@@ -6,6 +6,8 @@ import { Uiid } from "./LayerEnum";
 import { LayerHelper } from "./LayerHelper";
 import { LayerUIElement, UIParam, UIState } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
+import { tween } from "cc";
+import { Vec3 } from "cc";
 
 /** 界面层对象 */
 export class LayerUI extends Node {
@@ -74,6 +76,9 @@ export class LayerUI extends Node {
             state.uiid = uiid.toString();
             state.config = config;
         }
+        if (state.config.ani) {
+            params = this.getPopCommonEffect(params)
+        };
         state.params = params ?? {};
         state.valid = true;
         this.ui_nodes.set(config.prefab, state);
@@ -228,5 +233,58 @@ export class LayerUI extends Node {
                 this.removeCache(prefabPath);
             });
         }
+    }
+
+
+
+     /** 自定义弹窗动画 */
+    private getPopCommonEffect(callbacks?: UIParam) {
+        let newCallbacks: UIParam = {
+            // 节点添加动画
+            onAdded: (node, params) => {
+                node.setScale(0.6, 0.6, 0.6);
+
+                tween(node)
+                    .to(0.2, { scale: new Vec3(1, 1, 1) }, { easing: 'backOut' })
+                    .start();
+            },
+            // 节点删除动画
+            onBeforeRemove: (node, next) => {
+                tween(node)
+                    .to(0.2, { scale: new Vec3(0.8, 0.8, 0.8) }, { easing: 'backIn' })
+                    .call(() => {
+                        next();
+                    })
+                    .start();
+            },
+        }
+
+        if (callbacks) {
+            if (callbacks && callbacks.onAdded) {
+                let onAdded = callbacks.onAdded;
+                callbacks.onAdded = (node: Node, params: any) => {
+                    onAdded(node, params);
+
+                    // @ts-ignore
+                    newCallbacks.onAdded(node, params);
+                };
+            }else{
+                callbacks.onAdded = newCallbacks.onAdded
+            }
+
+            if (callbacks && callbacks.onBeforeRemove) {
+                let onBeforeRemove = callbacks.onBeforeRemove;
+                callbacks.onBeforeRemove = (node, params) => {
+                    onBeforeRemove(node, params);
+
+                    // @ts-ignore
+                    newCallbacks.onBeforeRemove(node, params);
+                };
+            }else{
+                callbacks.onBeforeRemove = newCallbacks.onBeforeRemove
+            }
+            return callbacks;
+        }
+        return newCallbacks;
     }
 }

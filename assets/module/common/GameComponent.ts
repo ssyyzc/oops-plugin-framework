@@ -570,6 +570,19 @@ export class GameComponent extends Component {
     protected onGameOrientation(): void { }
     //#endregion
 
+    //用于等待时间，和界面绑定，这样界面销毁时，这个定时器也会自动终止
+    /**
+     * 等待时间
+     * @param s 秒
+     */
+    sleep(s : number){
+        return new Promise((resolve, reject) => {
+            this.scheduleOnce(() => {
+                resolve(null)
+            }, s)
+        })
+    }
+
     /** 移除自己 */
     remove() {
         oops.gui.removeByNode(this.node);

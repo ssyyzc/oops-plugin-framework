@@ -76,7 +76,7 @@ export class UiHelp {
         }
     }
 
-    public static SetLabel(node: Node | undefined, str: number | string | undefined){
+    public static SetLabel(node: Node | undefined | null, str: number | string | undefined){
         if (!node || !node.isValid) {
             return console.error("Label节点不存在");
         }

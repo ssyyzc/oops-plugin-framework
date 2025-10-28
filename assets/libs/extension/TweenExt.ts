@@ -9,11 +9,41 @@ import { EDITOR_NOT_IN_PREVIEW } from "cc/env";
 declare module "cc" {
     interface Tween {
         jump(duration: number, to: Vec3, jumpHeight: number, opts?: ITweenOption): Tween;
+        bezier(duration : number, p : Vec3, end : Vec3, opts?: ITweenOption): Tween;
     }
 }
 
+//一阶贝塞尔
+function lineBezier(v1 : Vec3, v2 : Vec3, t : number) : Vec3{
+    let tempV3 : Vec3 = new Vec3()
+    Vec3.lerp(tempV3, v1, v2, t)
+    return tempV3
+}
 
 if (!EDITOR_NOT_IN_PREVIEW) {
+    Object.defineProperty(Tween.prototype, "bezier", {
+        value : function(duration : number, p : Vec3, end : Vec3, opts?: ITweenOption) {
+            opts = opts ?? {}
+            let old = opts.onUpdate
+
+            let begin : Vec3
+            // console.log("tttttttt", this, this.target)
+            // let begin = this.target.position
+            
+            // @ts-ignore
+            opts.onUpdate = (target : Node, ratio: number) => {
+                if(!begin) begin = target.position
+
+                let temp1 = lineBezier(begin, p, ratio)
+                let temp2 = lineBezier(p, end, ratio)
+                target.position = lineBezier(temp1, temp2, ratio)
+            }
+            
+            this.to(duration, { position: end }, opts);
+            return this
+        }
+    })
+
     Object.defineProperty(Tween.prototype, "jump", {
         value : function(duration: number, to: Vec3, jumpHeight: number, opts?: ITweenOption) {
             opts = opts ?? {}

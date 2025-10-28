@@ -424,6 +424,11 @@ export class GameComponent extends Component {
                 if (!this.canTouch) {
                     return;
                 }
+                
+                // @ts-ignore
+                if(btn?.node._stop_click){
+                    return
+                }
 
                 if (playAudio) {
                     oops.audio.playEffect('sound/btn_click');
@@ -447,7 +452,9 @@ export class GameComponent extends Component {
                 callback.call(this, btn);
             }, this);
 
-            this._registerEventList.set(node.uuid, { node: node, type: "click" });
+            btn.clickEvents.push(new EventHandler())
+
+            // this._registerEventList.set(node.uuid, { node: node, type: "click" });
         } else if (toggle) {
 
             // let hd = new EventHandler();//copy对象

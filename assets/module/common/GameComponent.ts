@@ -590,6 +590,10 @@ export class GameComponent extends Component {
         })
     }
 
+    btn_close(){
+        this.remove()
+    }
+
     /** 移除自己 */
     remove() {
         oops.gui.removeByNode(this.node);

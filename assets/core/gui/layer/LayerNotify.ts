@@ -78,6 +78,7 @@ export class LayerNotify extends Node {
         let prompt = childNode.getChildByName("prompt")!;
         let toastCom = prompt.getComponent(Notify)!;
         childNode.parent = this.notify;
+        this.notify.y = -200
 
         toastCom.onComplete = () => {
             if (this.notify.children.length == 0) {

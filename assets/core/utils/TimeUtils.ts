@@ -35,4 +35,15 @@ export class TimeUtil {
             }, ms)
         });
     }
+
+    // ------ NEW CODE ----------
+    private static readonly START_DATE = new Date(Date.UTC(2025, 10, 1));
+
+    // 获取当前时间距离2025年10月1日
+    static getDayNum() {
+        const curDate = new Date();
+        const diffMs = Math.abs(curDate.getTime() - TimeUtil.START_DATE.getTime());
+        const dayNum = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        return dayNum;
+    }
 }

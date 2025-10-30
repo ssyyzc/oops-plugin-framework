@@ -63,7 +63,6 @@ export class EffectFinishedRelease extends Component {
     }
 
     private onRecovery() {
-        this.destroy()
         if (this.node.parent) message.dispatchEvent(EffectEvent.Put, this.node);
     }
 }

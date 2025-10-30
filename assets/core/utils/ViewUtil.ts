@@ -22,9 +22,9 @@ export class ViewUtil {
             let _node = items[i];
             if(_node.name.startsWith("_")) continue
             if (_node.name.length > 0) {
-                if (map.has(_node.name))
-                    console.error(`使用ViewUtil.nodeTreeInfoLite方法时发现重复的节点名称【${_node.name}】`);
-                else
+                if (map.has(_node.name)){
+                    // console.error(`使用ViewUtil.nodeTreeInfoLite方法时发现重复的节点名称【${_node.name}】`);
+                }else
                     map.set(_node.name, _node);
             }
             ViewUtil.nodeTreeInfoLite(_node, map);

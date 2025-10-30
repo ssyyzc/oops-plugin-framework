@@ -37,7 +37,7 @@ export class TimeUtil {
     }
 
     // ------ NEW CODE ----------
-    private static readonly START_DATE = new Date(Date.UTC(2025, 10, 1));
+    private static readonly START_DATE = new Date(Date.UTC(2025, 9, 1));
 
     // 获取当前时间距离2025年10月1日
     static getDayNum() {
@@ -45,5 +45,24 @@ export class TimeUtil {
         const diffMs = Math.abs(curDate.getTime() - TimeUtil.START_DATE.getTime());
         const dayNum = Math.floor(diffMs / (1000 * 60 * 60 * 24));
         return dayNum;
+    }
+
+    /**
+     *  获取当前月份的最大天数
+     * @returns 
+     */
+    static getMaxDayInCurrentMonth(): number {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1; // 月份从 0 开始，所以需要加 1
+        return new Date(year, month, 0).getDate(); // 0 表示上个月的最后一天
+    }
+
+    /**
+     * 获取当前日期
+     * @returns 
+     */
+    static getCurrentDay(): number {
+        return new Date().getDate();
     }
 }

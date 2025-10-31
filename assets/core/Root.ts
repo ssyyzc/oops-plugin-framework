@@ -141,6 +141,12 @@ export class Root extends Component {
         // 游戏隐藏事件
         game.on(Game.EVENT_HIDE, this.onHide, this);
 
+
+        // 游戏显示事件
+        game.on("yzh_resume", this.onShow, this);
+        // 游戏隐藏事件
+        game.on("yzh_pause", this.onHide, this);
+
         // 游戏尺寸修改事件
         if (!sys.isMobile) {
             screen.on("window-resize", () => {
@@ -158,6 +164,7 @@ export class Root extends Component {
     }
 
     private onShow() {
+        console.log("oops onShow")
         oops.timer.load();              // 处理回到游戏时减去逝去时间
         oops.audio.resumeAll();         // 恢复所有暂停的音乐播放
         director.resume();              // 恢复暂停场景的游戏逻辑，如果当前场景没有暂停将没任何事情发生
@@ -166,6 +173,7 @@ export class Root extends Component {
     }
 
     private onHide() {
+        console.log("oops onHide")
         oops.timer.save();             // 处理切到后台后记录切出时间
         oops.audio.pauseAll();         // 暂停所有音乐播放
         director.pause();              // 暂停正在运行的场景，该暂停只会停止游戏逻辑执行，但是不会停止渲染和 UI 响应。 如果想要更彻底得暂停游戏，包含渲染，音频和事件

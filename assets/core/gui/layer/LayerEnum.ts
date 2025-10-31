@@ -28,6 +28,7 @@ export enum LayerCustomType {
 /** 界面层类型 */
 export enum LayerType {
     /** 主界面层 */
+    MainUI = "MainUI",
     UI = "LayerUI",
     Menu = "Menu",
     /** 弹窗层 */

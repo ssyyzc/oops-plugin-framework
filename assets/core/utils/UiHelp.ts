@@ -12,7 +12,7 @@ export class UiHelp {
      * @param imgPath 图集中的图片名字
      * @returns 
      */
-    public static SetSpriteFrame(node: Node | null | undefined, dAtlas: SpriteAtlas | string, imgPath: string = "") {
+    public static SetSpriteFrame(node: Node | null | undefined, dAtlas: SpriteAtlas | string, imgPath: string = "", bundle : string = oops.res.defaultBundleName) {
         if (!dAtlas) {
             return;
         }
@@ -58,7 +58,7 @@ export class UiHelp {
                     });
                 }
             }else{
-                oops.res.load(`${dAtlas}/spriteFrame`, SpriteFrame, (err: Error, sp: SpriteFrame) => {
+                oops.res.load(bundle, `${dAtlas}/spriteFrame`, SpriteFrame, (err: Error, sp: SpriteFrame) => {
                     if (err) {
                         console.error(`加载【${`${dAtlas}/spriteFrame`}】的 图片 资源不存在`);
                         return;

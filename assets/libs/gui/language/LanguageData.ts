@@ -24,7 +24,7 @@ export class LanguageData {
     static path_spine: string = "language/spine";
 
     /** 当前语言 */
-    static current: string = "";
+    static current: string = "zh";
     /** 语言数据 */
     static language: Map<string, any> = new Map();
     /** TTF字体 */

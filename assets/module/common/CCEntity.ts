@@ -64,6 +64,15 @@ export abstract class CCEntity extends ecs.Entity {
         return node
     }
 
+    async addPrefabAsync<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
+        const node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+        const comp = node.getComponent(ctor)!;
+        this.add(comp);
+        node.parent = parent;
+        return node
+    }
+
+
     /**
      * 添加视图层组件
      * @param ctor     界面逻辑组件

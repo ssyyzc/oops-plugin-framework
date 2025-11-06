@@ -2,6 +2,8 @@ import { assetManager, Color, ImageAsset, Label, Node, RichText, Sprite, SpriteA
 import { oops } from "../Oops";
 import { dragonBones } from "cc";
 import { isValid } from "cc";
+import { Material } from "cc";
+import { builtinResMgr } from "cc";
 
 /** 常用ui控制工具 */
 export class UiHelp {
@@ -305,5 +307,31 @@ export class UiHelp {
             db.playAnimation(animation);
             return res
     //     }
+    }
+
+    // setGray(node: Node, isGray: boolean){
+    //     const mat = builtinResMgr.get<Material>('ui-sprite-gray-material')
+    //     node.getComponent(Sprite)?.setSharedMaterial()
+    // }
+
+    static setGray(target: Node | Sprite | Label, gray: boolean) {
+        if (target instanceof Node) {
+            target.walk((child) => {
+                const spr = child.getComponent(Sprite)
+                const lab = child.getComponent(Label)
+                spr && this.setGray(spr, gray)
+                lab && this.setGray(lab, gray)
+            })
+    
+        } else if (target instanceof Sprite) {
+            target.grayscale = gray;
+        } else if (target instanceof Label) {
+            if (gray) {
+                const mat = builtinResMgr.get<Material>('ui-sprite-gray-material')
+                target.customMaterial = mat
+            } else {
+                target.customMaterial = null;
+            }
+        }
     }
 }

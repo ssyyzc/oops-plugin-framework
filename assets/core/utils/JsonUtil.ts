@@ -7,7 +7,7 @@
 
 import { JsonAsset } from "cc";
 import { ZipLoader } from "db://oops-framework/core/common/loader/ZipLoader";
-import { resLoader } from "../common/loader/ResLoader";
+import { ProgressCallback, resLoader } from "../common/loader/ResLoader";
 
 /** 资源路径 */
 const pathJson: string = "config/game/";
@@ -66,7 +66,7 @@ export class JsonUtil {
      * @param isZip     是否为压缩包
      * @param zipNames  压缩包内的资源名列表
      */
-    static loadDir(zipNames?: string[]): Promise<void> {
+    static loadDir(zipNames: string[], onProgress: ProgressCallback): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.zip && zipNames) {
                 await ZipLoader.load(pathZip);
@@ -74,10 +74,11 @@ export class JsonUtil {
                     data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
                 });
                 ZipLoader.release(pathZip);
+                onProgress && onProgress(1, 1, null!)
                 resolve();
             }
             else {
-                resLoader.loadDir(pathJson, (err: Error | null, assets: JsonAsset[]) => {
+                resLoader.loadDir(pathJson, onProgress, (err: Error | null, assets: JsonAsset[]) => {
                     if (err) {
                         console.error(err.message);
                         resolve();

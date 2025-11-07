@@ -9,6 +9,7 @@ import { PromptResType } from "../GuiEnum";
 import { LayerUI } from "./LayerUI";
 import { UIState } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
+import { GameComponent } from "../../../module/common/GameComponent";
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -114,7 +115,8 @@ export class LayerPopUp extends LayerUI {
         if (this.ui_nodes.size > 0) {
             let vp = this.ui_nodes.array[this.ui_nodes.size - 1];
             if (vp.valid && vp.config.vacancy) {
-                this.remove(vp.config.prefab);
+                // this.remove(vp.config.prefab);
+                vp.node.getComponent(GameComponent)?.remove()
             }
         }
     }

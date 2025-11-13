@@ -1,13 +1,13 @@
 import { JsonUtil } from "./JsonUtil";
 
 export class TableUtils {
-    static getIdsByKey(tableName: string, key: string, value: any){
-        let data = JsonUtil.get(tableName);
+    static getIdsByKey<T>(tab: new () => T, key: keyof T, value: any){
+        let data = JsonUtil.get((tab as any).TableName);
         let list = []
         for(let id in data){
             let info : any = data[id]
             if(info[key] == value){
-                list.push(id)
+                list.push(Number(id))
             }
         }
         return list

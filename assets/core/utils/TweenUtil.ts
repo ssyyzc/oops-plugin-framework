@@ -38,4 +38,14 @@ export class TweenUtil {
             .start()
         })
     }
+
+    static execAsync(tweens : Tween){
+        return new Promise((resolve, reject) => {
+            tweens
+            .call(() => {
+                resolve(null)
+            })
+            .start()
+        })
+    }
 }

@@ -1,5 +1,6 @@
 import { Node } from "cc";
 import { ITweenOption } from "cc";
+import { Tween } from "cc";
 import { __private } from "cc";
 import { tween } from "cc";
 import { Vec3 } from "cc";
@@ -17,6 +18,20 @@ export class TweenUtil {
         return new Promise((resolve, reject) => {
             tween(node)
             .to(duration, props, opts)
+            .call(() => {
+                resolve(null)
+            })
+            .start()
+        })
+    }
+
+
+    static exec(node: Node, tweens : Tween){
+        return new Promise((resolve, reject) => {
+            tween(node)
+            .then(
+                tweens
+            )
             .call(() => {
                 resolve(null)
             })

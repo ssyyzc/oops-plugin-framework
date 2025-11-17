@@ -25,20 +25,6 @@ export class TweenUtil {
         })
     }
 
-
-    static exec(node: Node, tweens : Tween){
-        return new Promise((resolve, reject) => {
-            tween(node)
-            .then(
-                tweens
-            )
-            .call(() => {
-                resolve(null)
-            })
-            .start()
-        })
-    }
-
     static execAsync(tweens : Tween){
         return new Promise((resolve, reject) => {
             tweens

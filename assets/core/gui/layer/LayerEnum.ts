@@ -54,3 +54,9 @@ export enum LayerTypeCls {
     /** 自定义节点层 */
     Node = "Node"
 }
+
+
+export enum LayerEvent {
+    ADD_UI = "LAYER_ADD_UI",
+    REMOVE_UI = "LAYER_REMOVE_UI"
+}

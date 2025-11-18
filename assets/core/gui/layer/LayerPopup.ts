@@ -10,6 +10,7 @@ import { LayerUI } from "./LayerUI";
 import { UIState } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
 import { GameComponent } from "../../../module/common/GameComponent";
+import { LayerEvent } from "./LayerEnum";
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -20,6 +21,7 @@ export class LayerPopUp extends LayerUI {
 
     protected onChildAdded(child: Node) {
         this.mask && this.mask.setSiblingIndex(this.children.length - 2);
+        super.onChildAdded(child);
     }
 
     protected onChildRemoved(child: Node) {

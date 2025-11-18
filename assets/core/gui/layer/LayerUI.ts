@@ -2,7 +2,7 @@ import { instantiate, Node, Prefab, SafeArea } from "cc";
 import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
-import { Uiid } from "./LayerEnum";
+import { LayerEvent, Uiid } from "./LayerEnum";
 import { LayerHelper } from "./LayerHelper";
 import { LayerUIElement, UIParam, UIState } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
@@ -31,7 +31,7 @@ export class LayerUI extends Node {
     }
 
     protected onChildAdded(child: Node) {
-
+        if(child.name != "mask") oops.message.dispatchEvent(LayerEvent.ADD_UI)
     }
 
     protected onChildRemoved(child: Node) {
@@ -39,6 +39,8 @@ export class LayerUI extends Node {
         if (comp) {
             this.closeUi(comp.state);
         }
+
+        if(child.name != "mask") oops.message.dispatchEvent(LayerEvent.REMOVE_UI)
     }
 
     /**
@@ -235,7 +237,15 @@ export class LayerUI extends Node {
         }
     }
 
-
+    check_have_other(list : string[]){
+        const length = this.ui_nodes.array.length - 1;
+        for (let i = length; i >= 0; i--) {
+            const uip = this.ui_nodes.array[i];
+            if(uip.valid && !list.includes(uip.uiid)){
+                return true
+            }
+        }
+    }
 
      /** 自定义弹窗动画 */
     private getPopCommonEffect(callbacks?: UIParam) {

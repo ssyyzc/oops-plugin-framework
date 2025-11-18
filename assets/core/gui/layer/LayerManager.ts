@@ -377,4 +377,11 @@ export class LayerManager {
         LayerHelper.setFullScreen(node);
         return node;
     }
+
+    check_have_other(list : string[]){
+        for(let [k, v] of this.uiLayers){
+            if(v.check_have_other(list)) return true
+        }
+        return false
+    }
 }

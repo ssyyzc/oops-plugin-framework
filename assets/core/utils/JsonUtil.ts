@@ -34,7 +34,7 @@ export class JsonUtil {
      * 异步加载Json数据表
      * @param name 资源名
      */
-    static load(name: string): Promise<any> {
+    static load(name: string, bundle ?: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
             let content: any = null;
             if (data.has(name)) {
@@ -46,7 +46,7 @@ export class JsonUtil {
                     content = await ZipLoader.getJson(pathZip, `${name}.json`);
                 }
                 else {
-                    content = await resLoader.loadAsync(url, JsonAsset);
+                    content = await resLoader.loadAsync(bundle!, url, JsonAsset);
                 }
 
                 if (content) {

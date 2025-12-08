@@ -82,6 +82,12 @@ export default class VMParent extends GameComponent {
             if (path.split('.')[0] === '*') {
                 // @ts-ignore
                 comp['watchPath'] = path.replace('*', tag);
+
+                //@ts-ignore
+                if(comp['watchPath2']){
+                    //@ts-ignore
+                    comp['watchPath2'] = comp['watchPath2'].replace('*', tag);
+                }
             }
         }
     }

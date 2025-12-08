@@ -247,10 +247,9 @@ export class ECSEntity {
             //@ts-ignore
             let comp = this[ctor.compName];
             //@ts-ignore
-            comp.ent = null;
             if (isRecycle) {
                 comp.reset();
-
+                comp.ent = null;
                 // 回收组件到指定缓存池中
                 if (comp.canRecycle) {
                     const compPoolsType = ECSModel.compPools.get(componentTypeId)!;
@@ -258,6 +257,7 @@ export class ECSEntity {
                 }
             }
             else {
+                comp.ent = null;
                 this.compTid2Obj.set(componentTypeId, comp);        // 用于缓存显示对象组件
             }
         }

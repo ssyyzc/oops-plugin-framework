@@ -246,6 +246,12 @@ export class ECSEntity {
             hasComp = true;
             //@ts-ignore
             let comp = this[ctor.compName];
+
+            if(comp._completed_cb) {
+                comp._completed_cb();
+                delete comp._completed_cb;
+            }
+            
             //@ts-ignore
             if (isRecycle) {
                 comp.reset();
@@ -270,6 +276,13 @@ export class ECSEntity {
             this.compTid2Ctor.delete(componentTypeId);
             broadcastCompAddOrRemove(this, componentTypeId);
         }
+    }
+
+    waitCompleted(comp :ecs.Comp){
+        return new Promise((resolve, reject) => {
+            //@ts-ignore
+            comp._completed_cb = resolve;
+        })
     }
 
     /** 销毁实体，实体会被回收到实体缓存池中 */

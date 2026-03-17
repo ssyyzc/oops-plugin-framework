@@ -1,26 +1,15 @@
-import { Camera, Layers, Node, ResolutionPolicy, SafeArea, Widget, screen, view, warn } from "cc";
+import { Camera, Node, ResolutionPolicy, SafeArea, screen, view, warn } from "cc";
 import { oops } from "../../Oops";
-import { UICallbacks } from "./Defines";
-import { DelegateComponent } from "./DelegateComponent";
+import { gui } from "../Gui";
 import { LayerDialog } from "./LayerDialog";
-import { LayerType, LayerTypeCls } from "./LayerEnum";
+import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
+import { LayerGame } from "./LayerGame";
+import { LayerHelper } from "./LayerHelper";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
+import { LayerUIElement, UIParam } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
-
-/** 自动生成界面编号最小值 */
-const uiidMin = 1000000;
-/** 自动生成界面编号最大值 */
-const uiidMax = 9999999;
-var uiid: number = uiidMin;         // 当前自动递增界面编号
-
-/** 自动获取界面唯一编号 */
-function getUiid(): number {
-    if (uiid == uiidMax) uiid = uiidMin;
-    uiid++;
-    return uiid;
-}
 
 /** 界面层级管理器 */
 export class LayerManager {
@@ -29,7 +18,7 @@ export class LayerManager {
     /** 界面摄像机 */
     camera!: Camera;
     /** 游戏界面特效层 */
-    game!: Node;
+    game!: LayerGame;
     /** 新手引导层 */
     guide!: Node;
 
@@ -42,8 +31,6 @@ export class LayerManager {
 
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
-    /** UI配置 */
-    private configs: { [key: number]: UIConfig } = {};
     /** 界面层集合 - 无自定义类型 */
     private uiLayers: Map<string, LayerUI> = new Map();
     /** 界面层组件集合 */
@@ -54,6 +41,7 @@ export class LayerManager {
         this.clsLayers.set(LayerTypeCls.PopUp, LayerPopUp);
         this.clsLayers.set(LayerTypeCls.Dialog, LayerDialog);
         this.clsLayers.set(LayerTypeCls.Notify, LayerNotify);
+        this.clsLayers.set(LayerTypeCls.Game, LayerGame);
         this.clsLayers.set(LayerTypeCls.Node, null);
     }
 
@@ -88,13 +76,10 @@ export class LayerManager {
             let data = config[i];
             let layer: Node = null!;
             if (data.type == LayerTypeCls.Node) {
-                layer = this.create_node(data.name);
                 switch (data.name) {
-                    case LayerType.Game:
-                        this.game = layer;
-                        break
-                    case LayerType.Guide:
-                        this.guide = layer;
+                    case LayerCustomType.Guide:
+                        this.guide = this.create_node(data.name);
+                        layer = this.guide;
                         break
                 }
             }
@@ -113,6 +98,8 @@ export class LayerManager {
                 this.uiLayers.set(data.name, layer);
             else if (layer instanceof LayerNotify)
                 this.notify = layer;
+            else if (layer instanceof LayerGame)
+                this.game = layer;
         }
     }
 
@@ -148,8 +135,8 @@ export class LayerManager {
      * 初始化所有UI的配置对象
      * @param configs 配置对象
      */
-    init(configs: { [key: number]: UIConfig }): void {
-        this.configs = configs;
+    init(configs: UIConfigMap): void {
+        gui.internal.initConfigs(configs);
     }
 
     /**
@@ -170,7 +157,6 @@ export class LayerManager {
      * oops.gui.toast("提示内容");
      */
     toast(content: string, useI18n: boolean = false) {
-
         this.notify.toast(content, useI18n)
     }
 
@@ -184,23 +170,41 @@ export class LayerManager {
         this.notify.waitClose();
     }
 
-    /**
-     * 设置界面配置
-     * @param uiid   要设置的界面id
-     * @param config 要设置的配置
-     */
-    setConfig(uiid: number, config: UIConfig): void {
-        if (config)
-            this.configs[uiid] = config;
-        else
-            delete this.configs[uiid];
+    /** 获取界面信息 */
+    private getInfo(uiid: Uiid): { key: string; config: UIConfig } {
+        let key = "";
+        let config: UIConfig = null!;
+
+        // 界面配置
+        if (typeof uiid === 'object') {
+            key = uiid.bundle + "_" + uiid.prefab;
+            config = gui.internal.getConfig(key);
+            if (config == null) {
+                config = uiid;
+                gui.internal.setConfig(key, uiid);
+            }
+        }
+        // 界面对象 - 配合gui.register使用
+        else if (uiid instanceof Function) {
+            //@ts-ignore
+            key = uiid[gui.internal.GUI_KEY];
+            config = gui.internal.getConfig(key);
+        }
+        // 界面唯一标记
+        else {
+            key = uiid.toString();
+            config = gui.internal.getConfig(key);
+            if (config == null) {
+                console.error(`打开编号为【${uiid}】的界面失败，配置信息不存在`);
+            }
+        }
+        return { key, config };
     }
 
     /**
      * 同步打开一个窗口
      * @param uiid          窗口唯一编号
-     * @param uiArgs        窗口参数
-     * @param callbacks     回调对象
+     * @param param         窗口参数
      * @example
     var uic: UICallbacks = {
         onAdded: (node: Node, params: any) => {
@@ -210,18 +214,28 @@ export class LayerManager {
                     
         }
     };
-    oops.gui.open(UIID.Loading, null, uic);
+    oops.gui.open(UIID.Loading);
      */
-    open(uiid: number, uiArgs: any = null, callbacks?: UICallbacks): void {
-        const config = this.configs[uiid];
-        if (config == null) {
-            warn(`打开编号为【${uiid}】的界面失败，配置信息不存在`);
-            return;
-        }
+    open(uiid: Uiid, param?: UIParam): Promise<Node> {
+        return new Promise<Node>(async (resolve, reject) => {
+            let info = this.getInfo(uiid);
+            let layer = this.uiLayers.get(info.config.layer);
+            if (layer) {
+                let node = await layer.add(info.key, info.config, param);
+                resolve(node);
+            }
+            else {
+                console.error(`打开编号为【${uiid}】的界面失败，界面层不存在`);
+            }
+        });
+    }
 
-        let layer = this.uiLayers.get(config.layer);
+    /** 显示指定界面 */
+    show(uiid: Uiid) {
+        let info = this.getInfo(uiid);
+        let layer = this.uiLayers.get(info.config.layer);
         if (layer) {
-            layer.add(uiid, config, uiArgs, callbacks);
+            layer.show(info.config.prefab);
         }
         else {
             console.error(`打开编号为【${uiid}】的界面失败，界面层不存在`);
@@ -229,73 +243,81 @@ export class LayerManager {
     }
 
     /**
-     * 异步打开一个窗口
-     * @param uiid          窗口唯一编号
-     * @param uiArgs        窗口参数
-     * @example 
-     * var node = await oops.gui.openAsync(UIID.Loading);
+     * 移除指定标识的窗口
+     * @param uiid         窗口唯一标识
+     * @example
+     * oops.gui.remove(UIID.Loading);
      */
-    async openAsync(uiid: number, uiArgs: any = null): Promise<Node | null> {
-        return new Promise<Node | null>((resolve, reject) => {
-            const callbacks: UICallbacks = {
-                onAdded: (node: Node, params: any) => {
-                    resolve(node);
-                },
-                onLoadFailure: () => {
-                    resolve(null);
-                }
-            };
-            this.open(uiid, uiArgs, callbacks);
-        });
+    remove(uiid: Uiid) {
+        let info = this.getInfo(uiid);
+        let layer = this.uiLayers.get(info.config.layer);
+        if (layer) {
+            layer.remove(info.config.prefab);
+        }
+        else {
+            console.error(`移除编号为【${uiid}】的界面失败，界面层不存在`);
+        }
     }
 
     /**
-     * 通过界面配置打开一个界面
-     * @param config 界面配置数据
-     * @returns 
+     * 清理指定界面的缓存
+     * @param uiid         窗口唯一标识
+     * @example
+     * oops.gui.removeCache(UIID.Loading);
      */
-    openAsyncConfig(config: UIConfig): Promise<number> {
-        return new Promise(async (resolve, reject) => {
-            let uiid = getUiid();
-            config.auto = true;
-            this.setConfig(uiid, config);
-            await oops.gui.openAsync(uiid, { uiid: uiid });
-            resolve(uiid);
-        });
+    removeCache(uiid: Uiid) {
+        let info = this.getInfo(uiid);
+        let layer = this.uiLayers.get(info.config.layer);
+        if (layer) {
+            layer.removeCache(info.config.prefab);
+        }
+        else {
+            console.error(`移除编号为【${uiid}】的界面失败，界面层不存在`);
+        }
+    }
+
+    /**
+     * 通过界面节点移除
+     * @param node          窗口节点
+     * @example
+     * oops.gui.removeByNode(cc.Node);
+     */
+    removeByNode(node: Node) {
+        if (node instanceof Node) {
+            let comp = node.getComponent(LayerUIElement);
+            if (comp && comp.state) {
+                // 释放显示的界面
+                if (node.parent) {
+                    let uiid = gui.internal.getConfig(comp.state.uiid);
+                    this.remove(uiid);
+                }
+                // 释放缓存中的界面
+                else {
+                    let layer = this.uiLayers.get(comp.state.config.layer);
+                    if (layer) {
+                        // @ts-ignore 注：不对外使用
+                        layer.removeCache(comp.state.config.prefab);
+                    }
+                }
+            }
+            else {
+                warn(`当前删除的 Node 不是通过界面管理器添加的`);
+                node.destroy();
+            }
+        }
     }
 
     /**
      * 场景替换
      * @param removeUiId  移除场景编号
-     * @param openUiId    新打开场景编号
-     * @param uiArgs      新打开场景参数
+     * @param openUiid    新打开场景编号
+     * @param param       新打开场景参数
      */
-    replace(removeUiId: number, openUiId: number, uiArgs: any = null) {
-        const callbacks: UICallbacks = {
-            onAdded: (node: Node, params: any) => {
-                this.remove(removeUiId);
-            }
-        };
-        this.open(openUiId, uiArgs, callbacks);
-
-    }
-
-    /**
-     * 异步场景替换
-     * @param removeUiId  移除场景编号
-     * @param openUiId    新打开场景编号
-     * @param uiArgs      新打开场景参数
-     */
-    replaceAsync(removeUiId: number, openUiId: number, uiArgs: any = null): Promise<Node | null> {
-        return new Promise<Node | null>(async (resolve, reject) => {
-            const node = await this.openAsync(openUiId, uiArgs);
-            if (node) {
-                this.remove(removeUiId);
-                resolve(node);
-            }
-            else {
-                resolve(null);
-            }
+    replace(removeUiId: Uiid, openUiid: Uiid, param?: UIParam): Promise<Node> {
+        return new Promise<Node>(async (resolve, reject) => {
+            let node = await this.open(openUiid, param);
+            this.remove(removeUiId);
+            resolve(node);
         });
     }
 
@@ -305,17 +327,12 @@ export class LayerManager {
      * @example
      * oops.gui.has(UIID.Loading);
      */
-    has(uiid: number): boolean {
-        const config = this.configs[uiid];
-        if (config == null) {
-            warn(`编号为【${uiid}】的界面配置不存在，配置信息不存在`);
-            return false;
-        }
-
-        var result = false;
-        let layer = this.uiLayers.get(config.layer);
+    has(uiid: Uiid): boolean {
+        let info = this.getInfo(uiid);
+        let result = false;
+        let layer = this.uiLayers.get(info.config.layer);
         if (layer) {
-            result = layer.has(config.prefab);
+            result = layer.has(info.config.prefab);
         }
         else {
             console.error(`验证编号为【${uiid}】的界面失败，界面层不存在`);
@@ -330,17 +347,12 @@ export class LayerManager {
      * @example
      * oops.gui.has(UIID.Loading);
      */
-    get(uiid: number): Node {
-        const config = this.configs[uiid];
-        if (config == null) {
-            warn(`编号为【${uiid}】的界面配置不存在，配置信息不存在`);
-            return null!;
-        }
-
+    get(uiid: Uiid): Node {
+        let info = this.getInfo(uiid);
         let result: Node = null!;
-        let layer = this.uiLayers.get(config.layer);
+        let layer = this.uiLayers.get(info.config.layer);
         if (layer) {
-            result = layer.get(config.prefab);
+            result = layer.get(info.config.prefab);
         }
         else {
             console.error(`获取编号为【${uiid}】的界面失败，界面层不存在`);
@@ -349,66 +361,12 @@ export class LayerManager {
     }
 
     /**
-     * 移除指定标识的窗口
-     * @param uiid         窗口唯一标识
-     * @param isDestroy    移除后是否释放（默认释放内存）
-     * @example
-     * oops.gui.remove(UIID.Loading);
-     */
-    remove(uiid: number, isDestroy: boolean = true) {
-        const config = this.configs[uiid];
-        if (config == null) {
-            warn(`删除编号为【${uiid}】的界面失败，配置信息不存在`);
-            return;
-        }
-
-        let layer = this.uiLayers.get(config.layer);
-        if (layer) {
-            layer.remove(config.prefab, isDestroy);
-        }
-        else {
-            console.error(`移除编号为【${uiid}】的界面失败，界面层不存在`);
-        }
-    }
-
-    /**
-     * 通过界面节点移除
-     * @param node          窗口节点
-     * @param isDestroy     移除后是否释放资源（默认释放内存）
-     * @example
-     * oops.gui.removeByNode(cc.Node);
-     */
-    removeByNode(node: Node, isDestroy: boolean = true) {
-        if (node instanceof Node) {
-            let comp = node.getComponent(DelegateComponent);
-            if (comp && comp.vp) {
-                // 释放显示的界面
-                if (node.parent) {
-                    this.remove(comp.vp.uiid, isDestroy);
-                }
-                // 释放缓存中的界面
-                else if (isDestroy) {
-                    let layer = this.uiLayers.get(comp.vp.config.layer);
-                    if (layer) {
-                        // @ts-ignore 注：不对外使用
-                        layer.removeCache(comp.vp.config.prefab);
-                    }
-                }
-            }
-            else {
-                warn(`当前删除的 Node 不是通过界面管理器添加`);
-                node.destroy();
-            }
-        }
-    }
-
-    /**
      * 清除所有窗口
      * @param isDestroy 移除后是否释放
      * @example
      * oops.gui.clear();
      */
-    clear(isDestroy: boolean = false) {
+    clear(isDestroy: boolean = true) {
         this.uiLayers.forEach((layer: LayerUI) => {
             layer.clear(isDestroy);
         })
@@ -416,12 +374,7 @@ export class LayerManager {
 
     private create_node(name: string) {
         const node = new Node(name);
-        node.layer = Layers.Enum.UI_2D;
-        const w: Widget = node.addComponent(Widget);
-        w.isAlignLeft = w.isAlignRight = w.isAlignTop = w.isAlignBottom = true;
-        w.left = w.right = w.top = w.bottom = 0;
-        w.alignMode = 2;
-        w.enabled = true;
+        LayerHelper.setFullScreen(node);
         return node;
     }
 }

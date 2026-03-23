@@ -1,5 +1,7 @@
 import {Mat4, Vec3} from "cc";
 import {MathUtil} from "./MathUtil";
+import { v2 } from "cc";
+import { Vec2Util } from "./Vec2Util";
 
 /** 向量工具 */
 export class Vec3Util {
@@ -386,5 +388,21 @@ export class Vec3Util {
         const sign = Math.sign(Vec3Util.dot(c.normalize(), Vec3Util.cross(b.normalize(), a.normalize())));
 
         return angle * sign;
+    }
+
+    static signAngle(a: Vec3, b: Vec3): number {
+        return Vec2Util.signAngle(v2(a.x, a.y), v2(b.x, b.y))
+    }
+
+    static rotateAngle(v: Vec3, angleDeg: number): Vec3 {
+        const rad = angleDeg * Math.PI / 180
+        const cos = Math.cos(rad)
+        const sin = Math.sin(rad)
+
+        return new Vec3(
+            v.x * cos - v.y * sin,
+            v.x * sin + v.y * cos,
+            v.z
+        )
     }
 }

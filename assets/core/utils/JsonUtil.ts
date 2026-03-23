@@ -12,7 +12,7 @@ import { ProgressCallback, resLoader } from "../common/loader/ResLoader";
 /** 资源路径 */
 const pathJson: string = "config/game/";
 /** 压缩包资源路径 */
-const pathZip: string = "config/game/game";
+const pathZip: string = "config/config";
 
 /** 数据缓存 */
 const data: Map<string, any> = new Map();
@@ -20,7 +20,7 @@ const data: Map<string, any> = new Map();
 /** JSON数据表工具 */
 export class JsonUtil {
     /** 是否使用压缩包加载配置表 */
-    static zip: boolean = false;
+    static zip: boolean = true;
 
     /**
      * 通知资源名从缓存中获取一个Json数据表
@@ -66,13 +66,16 @@ export class JsonUtil {
      * @param isZip     是否为压缩包
      * @param zipNames  压缩包内的资源名列表
      */
-    static loadDir(zipNames: string[], onProgress: ProgressCallback): Promise<void> {
+    static loadDir(zipNames: string[], onProgress: ProgressCallback, bundle ?: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.zip && zipNames) {
-                await ZipLoader.load(pathZip);
-                zipNames.forEach(name => {
-                    data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
-                });
+                await ZipLoader.load(pathZip, bundle);
+                // zipNames.forEach(async name => {
+                for(let i in zipNames){
+                    let name = zipNames[i]
+                    let d = await ZipLoader.getJson(pathZip, `${name}.json`)
+                    data.set(name, d);
+                }
                 ZipLoader.release(pathZip);
                 onProgress && onProgress(1, 1, null!)
                 resolve();

@@ -16,9 +16,9 @@ export class ZipLoader {
      * @param url 
      * @returns 
      */
-    static load(url: string): Promise<JSZip> {
+    static load(url: string, bundle ?: string): Promise<JSZip> {
         return new Promise((resolve, reject) => {
-            resLoader.load(url, BufferAsset, async (error: Error | null, asset: BufferAsset) => {
+            resLoader.load(bundle!, url, BufferAsset, async (error: Error | null, asset: BufferAsset) => {
                 if (error) return reject(error);
 
                 var zip = await JSZip.loadAsync(asset.buffer());

@@ -365,7 +365,7 @@ export class GameComponent extends Component {
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
-    protected setButton(bindRootEvent: boolean = true) {
+    protected setButton(bindRootEvent: boolean = false) {
         // 自定义按钮批量绑定触摸事件
         if (bindRootEvent) {
             this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {

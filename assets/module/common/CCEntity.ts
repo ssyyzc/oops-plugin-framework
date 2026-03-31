@@ -178,6 +178,10 @@ export abstract class CCEntity extends ecs.Entity {
         let business = this.businesss.get(cls);
         if (business) this.businesss.delete(cls);
     }
+
+    emitMessage(eventName: string, ...args: any[]) {
+        oops.message.dispatchEvent(this.eid + "_" + eventName, ...args);
+    }
     //#endregion
 
     destroy(): void {

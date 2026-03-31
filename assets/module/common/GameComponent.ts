@@ -594,6 +594,26 @@ export class GameComponent extends Component {
         this.remove()
     }
 
+    protected onEntityEvent(event: string, listener: ListenerFunc, object: any) {
+        // @ts-ignore
+        let ent = (this.ent as any)
+        if(ent){
+            // // this.on(ent.eid + "_" + eventName, callback, thisArg);
+            // args = args.map((v) => {
+            //     return ent.eid + "_" + v;
+            // });
+            // this.setEvent(...args);
+            // const self: any = this;
+            // for (const name of args) {
+                // const func = self[name];
+                // if (func)
+                    this.on(ent.eid + "_" + event, listener, object);
+                // else
+                    // console.error(`名为【${name}】的全局事方法不存在`);
+            // }
+        }
+    }
+
     /** 移除自己 */
     remove() {
         oops.gui.removeByNode(this.node);

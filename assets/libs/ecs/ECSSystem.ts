@@ -7,7 +7,7 @@ import { ECSModel } from "./ECSModel";
 export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
     static s: boolean = true;
 
-    protected group: ECSGroup<E>;
+    protected group: ECSGroup<E> = null!;
     protected dt: number = 0;
 
     private enteredEntities: Map<number, E> = null!;
@@ -33,7 +33,27 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         this.hasEntityRemove = hasEntityRemove;
         this.hasUpdate = hasUpdate;
 
-        if (hasEntityEnter || hasEntityRemove) {
+        // if (hasEntityEnter || hasEntityRemove) {
+        //     this.enteredEntities = new Map<number, E>();
+        //     this.removedEntities = new Map<number, E>();
+
+        //     this.execute = this.execute1;
+        //     this.group = ECSModel.createGroup(this.filter());
+        //     this.group.watchEntityEnterAndRemove(this.enteredEntities, this.removedEntities);
+        // }
+        // else {
+        //     this.execute = this.execute0;
+        //     this.group = ECSModel.createGroup(this.filter());
+        // }
+
+        if (hasFirstUpdate) {
+            this.tmpExecute = this.execute;
+            this.execute = this.updateOnce;
+        }
+    }
+
+    init_group(){
+        if (this.hasEntityEnter || this.hasEntityRemove) {
             this.enteredEntities = new Map<number, E>();
             this.removedEntities = new Map<number, E>();
 
@@ -44,11 +64,6 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         else {
             this.execute = this.execute0;
             this.group = ECSModel.createGroup(this.filter());
-        }
-
-        if (hasFirstUpdate) {
-            this.tmpExecute = this.execute;
-            this.execute = this.updateOnce;
         }
     }
 
@@ -184,6 +199,8 @@ export class ECSRootSystem {
     init() {
         // 自动注册系统组件
         ECSModel.systems.forEach(sys => this.add(sys));
+
+        this.executeSystemFlows.forEach(sys => sys.init_group());
 
         // 初始化组件
         this.executeSystemFlows.forEach(sys => sys.init());

@@ -180,7 +180,7 @@ export class RandomManager {
         return list
     }
 
-    getSingleByWeight<T extends {weight: number}>(list: T[]) {
+    selectOneByWeight<T extends {weight: number}>(list: T[]) : T {
         let sumW = 0
         let range : number[] = []
         list.forEach((cfg, i) => {
@@ -201,6 +201,34 @@ export class RandomManager {
                 break;
             }
         }
-        return { cfg: list[idx], i: idx }
+        return list[idx]
+    }
+
+
+    /**
+     * 
+     * @param list 
+     * @param num 
+     * @param putback 是否放回
+     */
+    selectByWeight<T extends {weight: number}>(list: T[], num : number, putback = false) {
+        if(!putback){   //不放回，即结果不会有相同
+            if(num >= list.length) return list
+
+            let result = []
+            let new_list = list.slice(0)
+            for(let i = 0;i < num; ++i){
+                let data = this.selectOneByWeight(new_list)
+                new_list.removeOne(data)
+                result.push(data)
+            }
+            return result
+        }else{
+            let result = []
+            for(let i = 0;i < num; ++i){
+                result.push(this.selectOneByWeight(list))
+            }
+            return result
+        }
     }
 }

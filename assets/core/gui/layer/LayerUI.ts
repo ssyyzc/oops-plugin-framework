@@ -14,7 +14,7 @@ export class LayerUI extends Node {
     /** 全局窗口打开失败事件 */
     onOpenFailure: Function = null!;
     /** 显示界面节点集合 */
-    protected ui_nodes = new Collection<string, UIState>();
+    public ui_nodes = new Collection<string, UIState>();
     /** 被移除的界面缓存数据 */
     protected ui_cache = new Map<string, UIState>();
 
@@ -84,6 +84,7 @@ export class LayerUI extends Node {
         state.params = params ?? {};
         state.valid = true;
         this.ui_nodes.set(config.prefab, state);
+        oops.message.dispatchEvent("LayerUIShowUpdate")
         return state;
     }
 
@@ -156,6 +157,7 @@ export class LayerUI extends Node {
     /** 窗口关闭事件 */
     protected closeUi(state: UIState) {
         this.ui_nodes.delete(state.config.prefab);
+        oops.message.dispatchEvent("LayerUIShowUpdate")
     }
 
     /** 打开窗口失败逻辑 */

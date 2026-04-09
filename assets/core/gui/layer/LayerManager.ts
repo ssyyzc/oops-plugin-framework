@@ -384,4 +384,14 @@ export class LayerManager {
         }
         return false
     }
+
+    getTopLayer(list : string[]){
+        for(let i in list){
+            let ui : LayerUI = this.uiLayers.get(list[i])!
+
+            if(ui.ui_nodes.size > 0){
+                return ui.ui_nodes.array[ui.ui_nodes.size - 1]
+            }
+        }
+    }
 }

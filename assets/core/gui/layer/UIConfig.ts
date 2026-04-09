@@ -45,6 +45,8 @@ export interface UIConfig {
     siblingIndex?: number;
     /** 是否有界面打开动画 */
     ani?: boolean;
+
+    assets ?: number[]
 }
 
 /** 游戏元素配置 */

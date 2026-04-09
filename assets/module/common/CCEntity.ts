@@ -66,7 +66,10 @@ export abstract class CCEntity extends ecs.Entity {
 
     async addPrefabAsync<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
         const node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
-        const comp = node.getComponent(ctor)!;
+        let comp = node.getComponent(ctor)!;
+        if(!comp){
+            comp = node.addComponent(ctor as any)
+        }
         this.add(comp);
         node.parent = parent;
         return node
@@ -111,7 +114,7 @@ export abstract class CCEntity extends ecs.Entity {
         if (key) {
             const node = oops.gui.get(key);
             if (node == null) {
-                console.error(`${key} 界面重复关闭`);
+                // console.error(`${key} 界面重复关闭`);
                 return;
             }
 

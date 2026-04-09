@@ -30,7 +30,8 @@ export enum LayerType {
     /** 主界面层 */
     MainUI = "MainUI",
     UI = "LayerUI",
-    Menu = "Menu",
+    Menu = "MenuUI",
+    Asset = "AssetUI",
     /** 弹窗层 */
     PopUp = "LayerPopUp",
     /** 模式窗口层 */

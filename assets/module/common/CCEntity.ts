@@ -58,7 +58,10 @@ export abstract class CCEntity extends ecs.Entity {
      */
     addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
         const node = ViewUtil.createPrefabNode(path, bundleName);
-        const comp = node.getComponent(ctor)!;
+        let comp = node.getComponent(ctor)!;
+        if(!comp){
+            comp = node.addComponent(ctor as any)
+        }
         this.add(comp);
         node.parent = parent;
         return node
@@ -94,7 +97,11 @@ export abstract class CCEntity extends ecs.Entity {
                 }
 
                 const node = await oops.gui.open(key, params);
-                const comp = node.getComponent(ctor) as ecs.Comp;
+                let comp = node.getComponent(ctor) as ecs.Comp;
+                if(!comp){
+                    //@ts-ignore
+                    comp = node.addComponent(ctor as any) //as ecs.Comp;
+                }
                 this.add(comp);
                 oops.gui.show(key);
                 resolve(node);

@@ -10,6 +10,7 @@ import { CompType } from "../../libs/ecs/ECSModel";
 import { CCBusiness } from "./CCBusiness";
 import { CCView } from "./CCView";
 import { CCViewVM } from "./CCViewVM";
+import { ListenerFunc } from "../../core/common/event/EventMessage";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
@@ -191,6 +192,14 @@ export abstract class CCEntity extends ecs.Entity {
 
     emitMessage(eventName: string, ...args: any[]) {
         oops.message.dispatchEvent(this.eid + "_" + eventName, ...args);
+    }
+
+    on(eventName: string,  listener: ListenerFunc, object: object) {
+        oops.message.on(this.eid + "_" + eventName, listener, object);
+    }
+
+    off(eventName: string, listener: ListenerFunc, object: object) {
+        oops.message.off(this.eid + "_" + eventName, listener, object)
     }
     //#endregion
 

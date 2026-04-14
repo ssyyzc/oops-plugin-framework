@@ -6,6 +6,7 @@
  */
 import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { BaseGameComponent } from "./BaseGameComponent";
+import { Toggle } from "cc";
 
 const { ccclass } = _decorator;
 
@@ -35,4 +36,12 @@ interface ResRecord {
 @ccclass("GameComponent")
 export class GameComponent extends BaseGameComponent {
 
+    onToggle(tog: Toggle | number){
+
+    }
+
+    onToggleSub(tog: Toggle | number){
+
+
+    }
 }

@@ -11,6 +11,7 @@ import { CCBusiness } from "./CCBusiness";
 import { CCView } from "./CCView";
 import { CCViewVM } from "./CCViewVM";
 import { ListenerFunc } from "../../core/common/event/EventMessage";
+import { GameComponent } from "./GameComponent";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
@@ -101,8 +102,12 @@ export abstract class CCEntity extends ecs.Entity {
                 let comp = node.getComponent(ctor) as ecs.Comp;
                 if(!comp){
                     //@ts-ignore
-                    comp = node.addComponent(ctor as any) //as ecs.Comp;
+                    comp = node.addComponent(ctor as any); //as ecs.Comp;
                 }
+
+                let gc = (comp as unknown as GameComponent);
+                gc.setUnlockItem(gc.getUnlockItemByClassName());
+
                 this.add(comp);
                 oops.gui.show(key);
                 resolve(node);

@@ -7,6 +7,9 @@
 import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { BaseGameComponent } from "./BaseGameComponent";
 import { Toggle } from "cc";
+import { smc } from "db://assets/script/game/common/SingletonModuleComp";
+import { PanelStyle } from "db://assets/script/game/component/Style/PanelStyle";
+import { UnlockItem } from "db://assets/script/game/unlock/UnlockItem";
 
 const { ccclass } = _decorator;
 
@@ -35,6 +38,18 @@ interface ResRecord {
  */
 @ccclass("GameComponent")
 export class GameComponent extends BaseGameComponent {
+    getUnlockItemByClassName(){
+        return smc.unlock.UnlockModel.nameMap.get(this.constructor.name)
+    }
+    
+    setUnlockItem(item ?: UnlockItem){
+        if(!item) return
+        let panelStyle = this.node.getComponent(PanelStyle)
+        if(!panelStyle) return
+
+
+        panelStyle.setTitle(item.UnlockItemModel.table.name)
+    }
 
     onToggle(tog: Toggle | number){
 

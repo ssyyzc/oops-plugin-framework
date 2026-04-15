@@ -36,11 +36,15 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string | null 
  */
 class ViewModel<T> {
     constructor(data: T, tag: string) {
-        new JsonOb(data, this._callback.bind(this));
+        this.jsonOb = new JsonOb(data, this._callback.bind(this));
         this.$data = data;
         this._tag = tag;
     }
 
+    destory(){
+        this.jsonOb?.destory()
+    }
+    jsonOb : JsonOb<T> = null!
     public $data: T;
 
     // 索引值用的标签
@@ -115,6 +119,11 @@ class VMManager {
      * @param tag 
      */
     remove(tag: string) {
+        let mv = this._mvs.get(tag)
+        if(mv){
+            mv.destory()
+        }
+        
         this._mvs.delete(tag);
     }
 

@@ -15,7 +15,7 @@ const types = {
     array: '[object Array]'
 }
 const OAM = ['push', 'pop', 'shift', 'unshift', 'sort', 'reverse', 'splice'];
-
+const DATA_CALLBACK_FUNC = "____DATA_CALLBACK_FUNC"
 /**
  * 实现属性拦截的类
  */
@@ -24,10 +24,23 @@ export class JsonOb<T> {
         if (OP.toString.call(obj) !== types.obj && OP.toString.call(obj) !== types.array) {
             console.error('请传入一个对象或数组');
         }
+
+        // 检查对象是否已经被监听
+        //@ts-ignore
+        if (!obj[DATA_CALLBACK_FUNC]) {obj[DATA_CALLBACK_FUNC] = []}
+        //@ts-ignore
+        obj[DATA_CALLBACK_FUNC].push(callback);
+
+        this.$data = obj
         this._callback = callback;
         this.observe(obj);
     }
-
+    
+    destory(){
+        //@ts-ignore
+        this.$data[DATA_CALLBACK_FUNC] = this.$data[DATA_CALLBACK_FUNC].filter(item => item !== this._callback);
+    }
+    public $data: T;
     private _callback;
 
     /**对象属性劫持 */
@@ -38,6 +51,7 @@ export class JsonOb<T> {
 
         // @ts-ignore  注：避免API生成工具报错
         Object.keys(obj).forEach((key) => {
+            if(key == DATA_CALLBACK_FUNC) return
             let self = this;
             // @ts-ignore
             let oldVal = obj[key];
@@ -61,7 +75,14 @@ export class JsonOb<T> {
 
                         const ov = oldVal;
                         oldVal = newVal;
-                        self._callback(newVal, ov, pathArray);
+                        // self._callback(newVal, ov, pathArray);
+                        //@ts-ignore
+                        if (obj[DATA_CALLBACK_FUNC]) {
+                            //@ts-ignore
+                            obj[DATA_CALLBACK_FUNC].forEach((callback: Function) => {
+                                callback(newVal, ov, pathArray);
+                            });
+                        }
                     }
                 }
             })

@@ -167,7 +167,7 @@ export class MessageManager {
         let eds = this.events.get(event);
 
         if (!eds) {
-            log(`名为【${event}】的事件不存在`);
+            // log(`名为【${event}】的事件不存在`);
             return;
         }
 

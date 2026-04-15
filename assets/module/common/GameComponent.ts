@@ -8,8 +8,8 @@ import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Inpu
 import { BaseGameComponent } from "./BaseGameComponent";
 import { Toggle } from "cc";
 import { smc } from "db://assets/script/game/common/SingletonModuleComp";
-import { PanelStyle } from "db://assets/script/game/component/Style/PanelStyle";
 import { UnlockItem } from "db://assets/script/game/unlock/UnlockItem";
+import { PanelStyle } from "db://assets/script/component/Style/PanelStyle";
 
 const { ccclass } = _decorator;
 

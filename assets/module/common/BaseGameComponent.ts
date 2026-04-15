@@ -384,7 +384,6 @@ export class BaseGameComponent extends Component {
         // Cocos Creator Button组件批量绑定触摸事件（使用UIButton支持放连点功能）
         const regex = /<([^>]+)>/;
         const buttons = this.node.getComponentsInChildren<Button>(Button);
-        console.log("battons ****", buttons)
         buttons.forEach((b: Button) => {
             const node = b.node;
             const self: any = this;

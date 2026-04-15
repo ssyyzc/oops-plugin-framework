@@ -103,6 +103,8 @@ export abstract class CCEntity extends ecs.Entity {
                 if(!comp){
                     //@ts-ignore
                     comp = node.addComponent(ctor as any); //as ecs.Comp;
+                    //@ts-ignore
+                    if(comp.onAdded) comp.onAdded(params?.data)
                 }
 
                 let gc = (comp as unknown as GameComponent);

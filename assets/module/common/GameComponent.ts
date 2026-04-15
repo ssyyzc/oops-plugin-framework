@@ -42,13 +42,20 @@ export class GameComponent extends BaseGameComponent {
         return smc.unlock.UnlockModel.nameMap.get(this.constructor.name)
     }
     
+    _unlockItem ?: UnlockItem
     setUnlockItem(item ?: UnlockItem){
-        if(!item) return
+        this._unlockItem = item
+        
+
         let panelStyle = this.node.getComponent(PanelStyle)
         if(!panelStyle) return
 
-
-        panelStyle.setTitle(item.UnlockItemModel.table.name)
+        if(item){
+            panelStyle.setTitle(item.UnlockItemModel.table.name)
+            panelStyle.setWenhaoState(!!item.UnlockItemModel.table.desc)
+        }else{
+            panelStyle.setWenhaoState(false)
+        }
     }
 
     onToggle(tog: Toggle | number){
@@ -57,6 +64,10 @@ export class GameComponent extends BaseGameComponent {
 
     onToggleSub(tog: Toggle | number){
 
+    }
 
+    btn_wenhao(){
+        if(!this._unlockItem) return
+        smc.account.loadHelp(this._unlockItem.UnlockItemModel.table.name, this._unlockItem.UnlockItemModel.table.desc)
     }
 }

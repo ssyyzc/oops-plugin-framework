@@ -7,6 +7,35 @@ import { builtinResMgr } from "cc";
 
 /** 常用ui控制工具 */
 export class UiHelp {
+    public static SetSpriteFrame(node : Node|null|undefined, paths : string[]|string, bundle : string = oops.res.defaultBundleName){
+        if(!paths) 
+            return
+
+        if(!node){
+            console.error('SetSpriteFrame No Node!');
+            return
+        }
+
+        if(typeof paths === 'string'){
+            this._SetSpriteFrame(node, paths, undefined, bundle)
+        }else{
+            if(paths[1]){
+                let atlasPath = paths[0]
+                let imgPath = paths[1]
+                oops.res.load(atlasPath, SpriteAtlas, null, (err: Error, atlas: SpriteAtlas) => {
+                    if (err) {
+                        console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
+                        return;
+                    }
+
+                    atlas.addRef();
+                    this._SetSpriteFrame(node, atlas, imgPath, bundle)
+                })
+            }else{
+                this._SetSpriteFrame(node, paths[0], undefined, bundle)
+            }
+        }
+    }
     /**
      * 设置图片
      * @param node 需要设置的节点
@@ -14,7 +43,7 @@ export class UiHelp {
      * @param imgPath 图集中的图片名字
      * @returns 
      */
-    public static SetSpriteFrame(node: Node | null | undefined, dAtlas: SpriteAtlas | string, imgPath: string = "", bundle : string = oops.res.defaultBundleName) {
+    private static _SetSpriteFrame(node: Node | null | undefined, dAtlas: SpriteAtlas | string, imgPath: string = "", bundle : string = oops.res.defaultBundleName) {
         if (!dAtlas) {
             return;
         }
@@ -112,28 +141,28 @@ export class UiHelp {
     }
 
 
-    public static async setAtlasSpriteEx(node: Node, path: string[]|null, cb : Function = null!) {
-        if(!path || path.length < 2) return 
-        await this.setAtlasSprite(node, path[0], path[1], cb!);
-    }
+    // public static async setAtlasSpriteEx(node: Node, path: string[]|null, cb : Function = null!) {
+    //     if(!path || path.length < 2) return 
+    //     await this.setAtlasSprite(node, path[0], path[1], cb!);
+    // }
 
-    public static setAtlasSprite(node: Node, atlasPath: string, frameKey: string, cb : Function = null!) {
-        return new Promise((resolve, reject) => {
-            oops.res.load(atlasPath, SpriteAtlas, null, (err : any, atlas : SpriteAtlas) => {
-                if (err) {
-                    console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
-                    resolve(null);
-                    return;
-                }
-                if (!node || !node.isValid) return;
-                if(!atlas.getSpriteFrame(frameKey)) console.warn("没有找到对应的图片", frameKey, atlasPath, atlas);
-                node!.getComponent(Sprite)!.spriteFrame = atlas.getSpriteFrame(frameKey);
-                atlas.addRef();
-                cb?.(atlas.getSpriteFrame(frameKey))
-                resolve(null);
-            })
-        })
-    }
+    // public static setAtlasSprite(node: Node, atlasPath: string, frameKey: string, cb : Function = null!) {
+    //     return new Promise((resolve, reject) => {
+    //         oops.res.load(atlasPath, SpriteAtlas, null, (err : any, atlas : SpriteAtlas) => {
+    //             if (err) {
+    //                 console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
+    //                 resolve(null);
+    //                 return;
+    //             }
+    //             if (!node || !node.isValid) return;
+    //             if(!atlas.getSpriteFrame(frameKey)) console.warn("没有找到对应的图片", frameKey, atlasPath, atlas);
+    //             node!.getComponent(Sprite)!.spriteFrame = atlas.getSpriteFrame(frameKey);
+    //             atlas.addRef();
+    //             cb?.(atlas.getSpriteFrame(frameKey))
+    //             resolve(null);
+    //         })
+    //     })
+    // }
 
     public static async loadDBRes(node: Node, path: string, cb?:Function) {
         let p1 =  oops.res.loadAsync(path + '_tex', dragonBones.DragonBonesAtlasAsset)

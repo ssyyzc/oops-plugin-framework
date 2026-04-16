@@ -3,6 +3,7 @@ import { oops } from '../../core/Oops';
 import { VMBase } from './VMBase';
 import { VMEnv } from './VMEnv';
 import { SpriteAtlas } from 'cc';
+import { UiHelp } from '../../core/utils/UiHelp';
 
 const { ccclass, property, menu, executeInEditMode } = _decorator;
 
@@ -61,18 +62,18 @@ export default class VMAtlasSprite extends VMBase {
         }
 
         node.active = true
-
-        const [atlasPath, frameKey] = path//path.split(",");
-        oops.res.load(atlasPath, SpriteAtlas, null, (err: Error, atlas: SpriteAtlas) => {
-            if (err) {
-                console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
-                return;
-            }
-            if (!node || !node.isValid) return;
-            if(!atlas.getSpriteFrame(frameKey)) console.warn("没有找到对应的图片", frameKey, atlasPath);
-            node!.getComponent(Sprite)!.spriteFrame = atlas.getSpriteFrame(frameKey);
-            atlas.addRef();
-        })
+        UiHelp.SetSpriteFrame(this.node, path)
+        // const [atlasPath, frameKey] = path//path.split(",");
+        // oops.res.load(atlasPath, SpriteAtlas, null, (err: Error, atlas: SpriteAtlas) => {
+        //     if (err) {
+        //         console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
+        //         return;
+        //     }
+        //     if (!node || !node.isValid) return;
+        //     if(!atlas.getSpriteFrame(frameKey)) console.warn("没有找到对应的图片", frameKey, atlasPath);
+        //     node!.getComponent(Sprite)!.spriteFrame = atlas.getSpriteFrame(frameKey);
+        //     atlas.addRef();
+        // })
     }
 
     private checkLabel() {

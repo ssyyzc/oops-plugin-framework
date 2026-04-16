@@ -1,18 +1,18 @@
 export class SimpleQueue {
-    ps : Promise<void>[] = []
+    ps : Promise<any>[] = []
 
     wait_count = 0
     constructor(wait_count ?: number){
         this.wait_count = wait_count || 0
     }
 
-    async push(fun : Function | Promise<void>) {
+    async push(fun : Function | Promise<any>) {
         if(fun instanceof Promise){
             this.ps.push(fun)
         }else{
             this.ps.push(new Promise(async (resolve, reject) => {
                 await fun()
-                resolve()
+                resolve(null)
             }))
         }
 

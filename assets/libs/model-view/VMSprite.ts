@@ -2,6 +2,7 @@ import { assetManager, error, ImageAsset, Sprite, SpriteFrame, Texture2D, _decor
 import { oops } from '../../core/Oops';
 import { VMBase } from './VMBase';
 import { VMEnv } from './VMEnv';
+import { UiHelp } from '../../core/utils/UiHelp';
 
 const { ccclass, property, menu, executeInEditMode } = _decorator;
 
@@ -53,56 +54,57 @@ export default class VMSprite extends VMBase {
 
     setLabelValue(path: string) {
         var self = this;
-        if(path.indexOf("http") >= 0){
-            if (path.slice(path.length - 4) == ".png") {
-                // 远程 url 带图片后缀名
-                assetManager.loadRemote<ImageAsset>(path, function (err, imageAsset) {
-                    if (!err) {
-                        const spriteFrame = new SpriteFrame();
-                        const texture = new Texture2D();
-                        texture.image = imageAsset;
-                        spriteFrame.texture = texture;
+        UiHelp.SetSpriteFrame(this.node, path)
+        // if(path.indexOf("http") >= 0){
+        //     if (path.slice(path.length - 4) == ".png") {
+        //         // 远程 url 带图片后缀名
+        //         assetManager.loadRemote<ImageAsset>(path, function (err, imageAsset) {
+        //             if (!err) {
+        //                 const spriteFrame = new SpriteFrame();
+        //                 const texture = new Texture2D();
+        //                 texture.image = imageAsset;
+        //                 spriteFrame.texture = texture;
 
-                        if (self.node.isValid) {
-                            self.node.getComponent(Sprite)!.spriteFrame = spriteFrame;
-                        }
-                    } else {
-                        console.log("图片加载失败");
-                    }
-                });
-            } else {
-                // 远程 url 不带图片后缀名，此时必须指定远程图片文件的类型
-                assetManager.loadRemote<ImageAsset>(path, {ext: '.png'}, function (err, imageAsset) {
-                    if (!err) {
-                        const spriteFrame = new SpriteFrame();
-                        const texture = new Texture2D();
-                        texture.image = imageAsset;
-                        spriteFrame.texture = texture;
+        //                 if (self.node.isValid) {
+        //                     self.node.getComponent(Sprite)!.spriteFrame = spriteFrame;
+        //                 }
+        //             } else {
+        //                 console.log("图片加载失败");
+        //             }
+        //         });
+        //     } else {
+        //         // 远程 url 不带图片后缀名，此时必须指定远程图片文件的类型
+        //         assetManager.loadRemote<ImageAsset>(path, {ext: '.png'}, function (err, imageAsset) {
+        //             if (!err) {
+        //                 const spriteFrame = new SpriteFrame();
+        //                 const texture = new Texture2D();
+        //                 texture.image = imageAsset;
+        //                 spriteFrame.texture = texture;
 
-                        if(self.node.isValid){
-                            self.node.getComponent(Sprite)!.spriteFrame = spriteFrame;
-                        }
-                    } else {
-                        console.log("加载头像失败");
-                    }
-                });
-            }
-        }else{
-            if(!path){
-                self.node!.getComponent(Sprite)!.spriteFrame = null;
-                return;
-            }
+        //                 if(self.node.isValid){
+        //                     self.node.getComponent(Sprite)!.spriteFrame = spriteFrame;
+        //                 }
+        //             } else {
+        //                 console.log("加载头像失败");
+        //             }
+        //         });
+        //     }
+        // }else{
+        //     if(!path){
+        //         self.node!.getComponent(Sprite)!.spriteFrame = null;
+        //         return;
+        //     }
             
-            oops.res.load(`${path}/spriteFrame`, SpriteFrame, (err: Error, sp: SpriteFrame) => {
-                if (err) {
-                    console.error(`加载【${`${path}/spriteFrame`}】的 图片 资源不存在`);
-                    return;
-                }
-                if (!self.node || !self.node.isValid) return;
-                self.node!.getComponent(Sprite)!.spriteFrame = sp;
-                sp.addRef();
-            });
-        }
+        //     oops.res.load(`${path}/spriteFrame`, SpriteFrame, (err: Error, sp: SpriteFrame) => {
+        //         if (err) {
+        //             console.error(`加载【${`${path}/spriteFrame`}】的 图片 资源不存在`);
+        //             return;
+        //         }
+        //         if (!self.node || !self.node.isValid) return;
+        //         self.node!.getComponent(Sprite)!.spriteFrame = sp;
+        //         sp.addRef();
+        //     });
+        // }
     }
 
     private checkLabel() {

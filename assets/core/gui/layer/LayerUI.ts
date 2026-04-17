@@ -84,7 +84,6 @@ export class LayerUI extends Node {
         state.params = params ?? {};
         state.valid = true;
         this.ui_nodes.set(config.prefab, state);
-        oops.message.dispatchEvent("LayerUIShowUpdate")
         return state;
     }
 

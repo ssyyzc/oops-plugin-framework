@@ -107,8 +107,8 @@ export abstract class CCEntity extends ecs.Entity {
                     if(comp.onAdded) comp.onAdded(params?.data)
                 }
 
-                let gc = (comp as unknown as GameComponent);
-                gc.setUnlockItem(gc.getUnlockItemByClassName());
+                // let gc = (comp as unknown as GameComponent);
+                // gc.setUnlockItem(gc.getUnlockItemByClassName());
 
                 this.add(comp);
                 oops.gui.show(key);

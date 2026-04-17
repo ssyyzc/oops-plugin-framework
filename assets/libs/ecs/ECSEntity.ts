@@ -141,7 +141,7 @@ export class ECSEntity {
                     this.remove(ctor);
                 }
                 else {
-                    console.log(`【${this.name}】实体【${ctor.compName}】组件已存在`);
+                    // console.log(`【${this.name}】实体【${ctor.compName}】组件已存在`);
                     // @ts-ignore
                     return this[ctor.compName] as T;
                 }

@@ -46,7 +46,6 @@ export class GameComponent extends BaseGameComponent {
     setUnlockItem(item ?: UnlockItem){
         this._unlockItem = item
         
-
         let panelStyle = this.node.getComponent(PanelStyle)
         if(!panelStyle) return
 

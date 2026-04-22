@@ -256,6 +256,8 @@ oops.log.table(object);
                 }
                 else {
                     value = result[index][a];
+                    if(!value || !value.lastIndexOf) continue
+
                     const start = value!.lastIndexOf("/");
                     const end = value!.lastIndexOf(".");
                     if (start > -1 && end > -1) {

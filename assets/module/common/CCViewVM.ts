@@ -7,6 +7,7 @@
 
 import { ecs } from '../../libs/ecs/ECS';
 import { ECSModel } from '../../libs/ecs/ECSModel';
+import { VM } from '../../libs/model-view/ViewModel';
 import VMParent from '../../libs/model-view/VMParent';
 import { CCEntity } from './CCEntity';
 
@@ -52,6 +53,17 @@ export abstract class CCViewVM<T extends CCEntity> extends VMParent implements e
     canRecycle!: boolean;
     ent!: T;
     tid: number = -1;
+
+    updateVM(){
+        // 解除全部引用
+        VM.remove(this.tag);
+        this.onLoad()
+
+        this.getVMComponents().forEach((v) => {
+            // @ts-ignore
+            v.onValueInit()
+        })
+    }
 
     /** 从父节点移除自己 */
     remove() {

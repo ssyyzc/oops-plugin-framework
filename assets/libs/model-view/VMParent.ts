@@ -93,7 +93,7 @@ export default class VMParent extends GameComponent {
     }
 
     /** 未优化的遍历节点，获取VM 组件 */
-    private getVMComponents() {
+    public getVMComponents() {
         let comps = this.node.getComponentsInChildren('VMBase');
         let parents = this.node.getComponentsInChildren('VMParent').filter(v => v.uuid !== this.uuid);  // 过滤掉自己
 
@@ -117,6 +117,7 @@ export default class VMParent extends GameComponent {
      * ```
      */
     protected onDestroy() {
+        console.log("onDestroyonDestroy")
         this.onUnBind();
 
         // 解除全部引用

@@ -57,11 +57,11 @@ export class GameComponent extends BaseGameComponent {
         }
     }
 
-    onToggle(tog: Toggle | number){
+    onToggle(tog: number){
 
     }
 
-    onToggleSub(tog: Toggle | number){
+    onToggleSub(tog: number){
 
     }
 

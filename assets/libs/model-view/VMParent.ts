@@ -117,7 +117,6 @@ export default class VMParent extends GameComponent {
      * ```
      */
     protected onDestroy() {
-        console.log("onDestroyonDestroy")
         this.onUnBind();
 
         // 解除全部引用

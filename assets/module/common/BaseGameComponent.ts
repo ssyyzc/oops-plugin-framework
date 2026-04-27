@@ -491,6 +491,17 @@ export class BaseGameComponent extends Component {
         }
     }
 
+    addBtnCallback(node : Node, callback: Function){
+        let btn = node.getComponent(Button)
+        if(!btn){
+            btn = node.addComponent(Button)
+            btn.transition = Button.Transition.SCALE
+            btn.zoomScale = 1.1
+        }
+
+        this.onRegisterEvent(node, callback)
+    }
+
     /**
      * 批量设置全局事件
      * @example

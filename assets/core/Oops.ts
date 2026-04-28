@@ -48,6 +48,8 @@ export class oops {
     static gui: LayerManager;
     /** 三维游戏世界管理 */
     static game: GameManager;
+    
+    static gameTimer : TimerManager;
 
     /** ----------可选模块---------- */
 

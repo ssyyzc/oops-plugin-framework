@@ -54,6 +54,17 @@ export const cocosUtil = {
         return pos;
     },
 
+
+    getArr(pos : Vec3, num : number, dir : number){
+        let arr = []
+        for(let i = 0;i < num; ++i){
+            arr.push(v3(
+                pos.x + (i - num / 2 + 0.5) * dir, pos.y, 0
+            ))
+        }
+        return arr
+    },
+
     /**
      * 以node为中心的矩形环区域内的随机点
      * @param node 参考节点

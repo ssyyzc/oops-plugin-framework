@@ -183,4 +183,8 @@ export class StringUtil {
 
         return str;
     }
+
+    static format(str : string, ...rest: any[]): string{
+        return this.substitute(str, rest)
+    }
 }

@@ -53,7 +53,6 @@ export class UiHelp {
             return;
         }
 
-        console.log('SetSpriteFrame atlasPath set', dAtlas, 'imgPath', imgPath);
         if (typeof dAtlas === 'string') {
             if(dAtlas.indexOf("http") >= 0){
                 if (dAtlas.slice(dAtlas.length - 4) == ".png") {

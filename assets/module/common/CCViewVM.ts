@@ -51,7 +51,20 @@ export abstract class CCViewVM<T extends CCEntity> extends VMParent implements e
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: T;
+    // ent!: T;
+    
+    private _ent!: T;
+    get ent(){
+        return this._ent as T;
+    }
+    set ent(value: T) {
+        this._ent = value;
+        if(!value){
+            this.clearEvent()
+        }
+    }
+
+
     tid: number = -1;
 
     changeEntity(ent : CCEntity){

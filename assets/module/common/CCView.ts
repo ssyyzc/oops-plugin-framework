@@ -38,7 +38,18 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: T;
+
+    private _ent!: T;
+    get ent(){
+        return this._ent as T;
+    }
+    set ent(value: T) {
+        this._ent = value;
+        if(!value){
+            this.clearEvent()
+        }
+    }
+
     tid: number = -1;
 
     /** 从父节点移除自己 */

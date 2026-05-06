@@ -54,7 +54,18 @@ export abstract class CCViewVM<T extends CCEntity> extends VMParent implements e
     ent!: T;
     tid: number = -1;
 
-    updateVM(){
+    changeEntity(ent : CCEntity){
+        // 不缓存到对象池了，组件对象的生命周期交给用户自己控制
+        this.canRecycle = false
+        //原来的实体中删除
+        this.ent?.remove(this.constructor as any, true)
+        //现在的实体中添加
+        ent.add(this, true)
+        //更新显示VM
+        this.updateVM()
+    }
+
+    private updateVM(){
         // 解除全部引用
         VM.remove(this.tag);
         this.onLoad()

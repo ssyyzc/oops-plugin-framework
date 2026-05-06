@@ -13,6 +13,7 @@ import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage
 import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { Toggle } from "cc";
+import { TimerManager } from "../../core/common/timer/TimerManager";
 
 const { ccclass } = _decorator;
 
@@ -601,6 +602,20 @@ export class BaseGameComponent extends Component {
         })
     }
 
+    registerTimer(object: any, field: string, target: object, onSecond?: Function, onComplete?: Function): string {
+        let t = this.getComponent(TimerManager)
+        if(!t){
+            t = this.addComponent(TimerManager)
+        }
+        return t!.register(object, field, target, onSecond, onComplete)
+    }
+
+    unRegisterTimer(id: string) {
+        let t = this.getComponent(TimerManager)
+        if(!t) return
+        t.unRegister(id)
+    }
+
     btn_close(){
         this.remove()
     }
@@ -628,6 +643,14 @@ export class BaseGameComponent extends Component {
     /** 移除自己 */
     remove() {
         oops.gui.removeByNode(this.node);
+    }
+
+    clearEvent(){
+        // 释放消息对象
+        if (this._event) {
+            this._event.destroy();
+            this._event = null;
+        }
     }
 
     protected onDestroy() {

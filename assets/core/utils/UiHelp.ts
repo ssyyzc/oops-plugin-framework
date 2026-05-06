@@ -8,6 +8,7 @@ import { builtinResMgr } from "cc";
 /** 常用ui控制工具 */
 export class UiHelp {
     public static SetSpriteFrame(node : Node|null|undefined, paths : string[]|string, bundle : string = oops.res.defaultBundleName){
+        console.log("SetSpriteFrame", node, paths)
         if(!paths) 
             return
 
@@ -15,6 +16,7 @@ export class UiHelp {
             console.error('SetSpriteFrame No Node!');
             return
         }
+
 
         if(typeof paths === 'string'){
             this._SetSpriteFrame(node, paths, undefined, bundle)

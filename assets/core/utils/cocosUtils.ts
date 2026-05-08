@@ -862,8 +862,13 @@ export const cocosUtil = {
      * @param node 注意，是同坐标系下的节点
      * @param pos 世界坐标
      */
-    convertToNodeSpace(node: Node, pos: Vec3): Vec3 {
-        let transform = node.parent!.getComponent(UITransform);
+    convertToNodeSpace(node: Node, pos: Vec3, isParent = true): Vec3 {
+        let transform
+        if(isParent){
+            transform = node.parent!.getComponent(UITransform);
+        }else{
+            transform = node.getComponent(UITransform);
+        }
 
         return transform!.convertToNodeSpaceAR(pos);
     },

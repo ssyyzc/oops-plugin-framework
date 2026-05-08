@@ -160,6 +160,9 @@ export class EffectSingleCase {
 
         // 设置动画播放速度
         this.setSpeed(node);
+        
+        // 显示到屏幕上
+        if (parent) node.parent = parent;
 
         // 设置显示对象位置
         if (params) {
@@ -167,8 +170,6 @@ export class EffectSingleCase {
             if (params.worldPos) node.worldPosition = params.worldPos;
         }
 
-        // 显示到屏幕上
-        if (parent) node.parent = parent;
 
         // 记录缓冲池中放出的节点
         this.effects_use.set(node, true);

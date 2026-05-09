@@ -10,6 +10,7 @@ import { Toggle } from "cc";
 import { smc } from "db://assets/script/game/common/SingletonModuleComp";
 import { PanelStyle } from "db://assets/script/component/Style/PanelStyle";
 import { UnlockItem } from "db://assets/script/gui/unlock/UnlockItem";
+import { ToggleStyle } from "db://assets/script/component/Style/ToggleStyle";
 
 const { ccclass } = _decorator;
 
@@ -57,11 +58,11 @@ export class GameComponent extends BaseGameComponent {
         }
     }
 
-    onToggle(tog: number){
+    onToggle(tog: number, toggle: ToggleStyle){
 
     }
 
-    onToggleSub(tog: number){
+    onToggleSub(tog: number, toggle: ToggleStyle){
 
     }
 

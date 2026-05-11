@@ -1,5 +1,7 @@
 import { Button, Color, Component, Input, input, instantiate, isValid, Node, Quat, sys, tween, Tween, UIOpacity, UIRenderer, UITransform, v3, Vec2, Vec3, view } from "cc";
 import { utilTools } from "./utilTools";
+import { Vec2Util } from "./Vec2Util";
+import { v2 } from "cc";
 
 declare global {
     interface String {
@@ -55,9 +57,41 @@ export const cocosUtil = {
     },
 
 
+    getArrByDirection(pos: Vec3, num: number, spacing: number, direction: Vec3) {
+        let arr = [];
+        
+        // 1. 计算 direction 的弧度 (假设 direction 是从 (0,0) 出发的向量)
+        // 使用 atan2(y, x) 得到与 X 轴正方向的角度
+        // 如果 direction 是 (0,1)，则 angle 为 Math.PI / 2 (90度)
+        let angle = Vec2Util.signAngle(v2(0, 1), v2(direction.x, direction.y)) //Math.atan2(direction.y, direction.x);
+        
+        // 2. 因为你要求的基准是 (0, 1)，即向上为 0 度旋转
+        // 实际上我们在计算偏移时，可以直接根据这个 angle 进行旋转
+        let cosA = Math.cos(angle);
+        let sinA = Math.sin(angle);
+
+        for (let i = 0; i < num; ++i) {
+            // 计算在基准坐标系下的局部 X 偏移（水平排列）
+            let localX = (i - num / 2 + 0.5) * spacing;
+            let localY = 0;
+
+            // 3. 应用旋转矩阵变换
+            // 这里的旋转是相对于 pos 点进行的
+            let worldX = pos.x + (localX * cosA - localY * sinA);
+            let worldY = pos.y + (localX * sinA + localY * cosA);
+
+            arr.push(v3(worldX, worldY, 0));
+        }
+        return arr;
+    },
+
+
     getArr(pos : Vec3, num : number, dir : number){
         let arr = []
         for(let i = 0;i < num; ++i){
+            /**
+             * 点 按照 (0,1,0) 到 direction的夹角旋转，中心为 pos
+             */
             arr.push(v3(
                 pos.x + (i - num / 2 + 0.5) * dir, pos.y, 0
             ))

@@ -13,6 +13,19 @@ export class TableUtils {
         return list
     }
 
+
+    static getTabByKey<T>(tab: new () => T, key: keyof T, value: any) : T[]{
+        let data = JsonUtil.get((tab as any).TableName);
+        let list : T[] = []
+        for(let id in data){
+            let info : any = data[id]
+            if(info[key] == value){
+                list.push(info)
+            }
+        }
+        return list
+    }
+
     static getTable<T>(Cls: new () => T, id: number) : T{
         let c = new Cls() as any
         c.init(id)

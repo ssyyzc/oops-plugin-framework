@@ -26,6 +26,15 @@ export class TableUtils {
         return list
     }
 
+    static getRandomId<T>(tab: new () => T){
+        let data = JsonUtil.get((tab as any).TableName);
+        let list = []
+        for(let id in data){
+            list.push(Number(id))
+        }
+        return list[Math.floor(Math.random() * list.length)]
+    }
+
     static getTable<T>(Cls: new () => T, id: number) : T{
         let c = new Cls() as any
         c.init(id)

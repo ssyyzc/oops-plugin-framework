@@ -37,6 +37,9 @@ if (!EDITOR_NOT_IN_PREVIEW) {
                 let temp1 = lineBezier(begin, p, ratio)
                 let temp2 = lineBezier(p, end, ratio)
                 target.position = lineBezier(temp1, temp2, ratio)
+                if(old){
+                    old(target, ratio)
+                }
             }
             
             this.to(duration, { position: end }, opts);

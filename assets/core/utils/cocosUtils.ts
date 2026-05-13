@@ -2,6 +2,8 @@ import { Button, Color, Component, Input, input, instantiate, isValid, Node, Qua
 import { utilTools } from "./utilTools";
 import { Vec2Util } from "./Vec2Util";
 import { v2 } from "cc";
+import { Vec3Util } from "./Vec3Util";
+import { oops } from "../Oops";
 
 declare global {
     interface String {
@@ -210,7 +212,7 @@ export const cocosUtil = {
      * @param num 个数，包括基准向量
      * @param radius 向量长度
      */
-    getSectorDirectionArr(direction: Vec3, angle: number, num: number, radius: number = 1) {
+    getSectorDirectionArr_ByCenter(direction: Vec3, angle: number, num: number, radius: number = 1) {
         direction = direction.clone().normalize().multiplyScalar(radius);
         if (num <= 1) {
             return [direction];
@@ -234,6 +236,34 @@ export const cocosUtil = {
 
         topArr.push(direction);
         let arr = topArr.concat(downArr);
+
+        return arr;
+    },
+
+
+
+     /**
+     * 以direction为中间方向，angle为间隔角度，获取num数量的，长度为radius的向量
+     * @param direction 基准方向
+     * @param angle 角度值
+     * @param num 个数，包括基准向量
+     * @param radius 向量长度
+     */
+    getSectorDirectionArr(direction: Vec3, angle: number, num: number, radius: number = 1) {
+        direction = direction.clone().normalize().multiplyScalar(radius);
+        if (num <= 1) {
+            return [direction];
+        }
+
+        let radian = utilTools.angleToRadian(angle);
+        let arr = [];
+
+        for(let i = 0;i < num; ++i){
+            let dir1 = new Vec3(0, 0, 0);
+            let dr = radian * (i - num / 2 + 0.5);
+            Vec3.rotateZ(dir1, direction, Vec3.ZERO, dr);
+            arr.push(dir1);
+        }
 
         return arr;
     },
@@ -322,6 +352,32 @@ export const cocosUtil = {
                     endCb();
                 }
             }).start();
+    },
+
+    tweenBezierToPos(node: Node, bPos : Vec3, toPos : Vec3, speed : number){
+        return new Promise((resolve, reject) => {
+            let dir = Vec3Util.distance(bPos, toPos)
+    
+            let uv = Vec3Util.sub(toPos, bPos)
+            let h_uv = oops.random.isBingo(0.5) ? v3(uv.y, -uv.x) : v3(-uv.y, uv.x)
+    
+            let v_l = oops.random.getRandomFloat(0.2, 0.8)
+            let h_l = oops.random.getRandomFloat(0.2, 1.2)
+            let p = Vec3Util.add(bPos, v3(uv.x * v_l + h_uv.x * h_l, uv.y * v_l + h_uv.y * h_l, 0))
+    
+            let lastPos = bPos.clone()
+            tween(node)
+            .bezier(dir / speed, p, toPos, { easing : "sineInOut", onUpdate: () => {
+                let direction = Vec3Util.sub(node.position, lastPos)
+                let angle = utilTools.radianToAngle(Math.atan2(direction.y, direction.x));
+                node.angle = angle;
+                lastPos = node.position.clone()
+            }})
+            .call(() => {
+                resolve(null)
+            })
+            .start()
+        })
     },
 
     instantiate(node: any) {

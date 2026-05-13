@@ -68,6 +68,7 @@ export class JsonUtil {
      */
     static loadDir(zipNames: string[], onProgress: ProgressCallback, bundle ?: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
+            console.log("loadDir 开始")
             if (this.zip && zipNames) {
                 await ZipLoader.load(pathZip, bundle);
                 // zipNames.forEach(async name => {
@@ -81,7 +82,7 @@ export class JsonUtil {
                 resolve();
             }
             else {
-                resLoader.loadDir(pathJson, onProgress, (err: Error | null, assets: JsonAsset[]) => {
+                resLoader.loadDir(bundle!, pathJson, onProgress, (err: Error | null, assets: JsonAsset[]) => {
                     if (err) {
                         console.error(err.message);
                         resolve();

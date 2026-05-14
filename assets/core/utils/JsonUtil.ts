@@ -82,7 +82,7 @@ export class JsonUtil {
                 resolve();
             }
             else {
-                resLoader.loadDir(bundle!, pathJson, onProgress, (err: Error | null, assets: JsonAsset[]) => {
+                resLoader.loadDir(bundle || resLoader.defaultBundleName, pathJson, onProgress, (err: Error | null, assets: JsonAsset[]) => {
                     if (err) {
                         console.error(err.message);
                         resolve();

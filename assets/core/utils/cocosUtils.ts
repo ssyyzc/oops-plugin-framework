@@ -362,7 +362,7 @@ export const cocosUtil = {
             let h_uv = oops.random.isBingo(0.5) ? v3(uv.y, -uv.x) : v3(-uv.y, uv.x)
     
             let v_l = oops.random.getRandomFloat(0.2, 0.8)
-            let h_l = oops.random.getRandomFloat(0.2, 1.2)
+            let h_l = oops.random.getRandomFloat(0.2, 0.3)
             let p = Vec3Util.add(bPos, v3(uv.x * v_l + h_uv.x * h_l, uv.y * v_l + h_uv.y * h_l, 0))
     
             let lastPos = bPos.clone()

@@ -182,6 +182,16 @@ export const cocosUtil = {
         return angle;
     },
 
+    vec2YAngle(pos: Vec2 | Vec3): number {
+        let rad = Math.atan2(pos.y, pos.x);
+        if (rad < 0) {
+            rad += Math.PI * 2;
+        }
+        let angle = utilTools.radianToAngle(rad) - 90;
+
+        return angle;
+    },
+
     vec3CopyVal(outVec3: Vec3, srcVec3: Vec3) {
         outVec3.x = srcVec3.x;
         outVec3.y = srcVec3.y;

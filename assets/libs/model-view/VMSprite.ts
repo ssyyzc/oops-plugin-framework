@@ -39,7 +39,7 @@ export default class VMSprite extends VMBase {
     start() {
         if (VMEnv.editor) return;
 
-        this.onValueInit();
+        // this.onValueInit();
     }
 
     /** 初始化获取数据 */

@@ -43,6 +43,7 @@ class ViewModel<T> {
 
     destory(){
         this.jsonOb?.destory()
+        this.jsonOb = null!
     }
     jsonOb : JsonOb<T> = null!
     public $data: T;

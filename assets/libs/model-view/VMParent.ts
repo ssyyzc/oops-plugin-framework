@@ -1,6 +1,7 @@
 import { Component, _decorator } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { VM } from './ViewModel';
+import VMEventCustom from './VMEventCustom';
 
 const { ccclass, help, executionOrder } = _decorator;
 
@@ -49,6 +50,21 @@ export default class VMParent extends GameComponent {
             this.replaceVMPath(comp, this.tag)
         }
         // console.groupEnd()
+    }
+
+
+    addVMEvent(watch : string, func : Function){
+        let vm = this.addComponent(VMEventCustom)!
+        vm.watchPath = watch
+        vm.changeEvents.push(func)
+        
+        /**
+         * 延后启用触发 onEnable
+         */
+        vm.enabled = false
+        this.scheduleOnce(()=> {
+            vm.enabled = true
+        })
     }
 
     /**在 onLoad 完成 和 start() 之前调用，你可以在这里进行初始化数据等操作 */

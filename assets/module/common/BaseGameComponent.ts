@@ -497,12 +497,14 @@ export class BaseGameComponent extends Component {
             node = this.node
         }
         let btn = node.getComponent(Button)
+
+        
         if(!btn){
             btn = node.addComponent(Button)
             btn.transition = Button.Transition.SCALE
             btn.zoomScale = 1.1
         }
-
+        btn.node.off("click")
         this.onRegisterEvent(node, callback)
     }
 

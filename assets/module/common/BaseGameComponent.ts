@@ -492,7 +492,10 @@ export class BaseGameComponent extends Component {
         }
     }
 
-    addBtnCallback(node : Node, callback: Function){
+    addBtnCallback(callback: Function, node ?: Node){
+        if(!node){
+            node = this.node
+        }
         let btn = node.getComponent(Button)
         if(!btn){
             btn = node.addComponent(Button)

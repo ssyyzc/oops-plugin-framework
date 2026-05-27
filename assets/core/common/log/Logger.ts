@@ -230,6 +230,7 @@ oops.log.table(object);
     }
 
     private stack(index: number): string {
+        return ""
         const e = new Error();
         const lines = e.stack!.split("\n");
         const result: Array<any> = [];

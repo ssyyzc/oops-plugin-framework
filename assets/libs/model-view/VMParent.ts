@@ -55,13 +55,13 @@ export default class VMParent extends GameComponent {
 
     addVMEvent(watch : string, func : Function){
         let vm = this.addComponent(VMEventCustom)!
+        vm.enabled = false
         vm.watchPath = watch
         vm.changeEvents.push(func)
         
         /**
          * 延后启用触发 onEnable
          */
-        vm.enabled = false
         this.scheduleOnce(()=> {
             vm.enabled = true
         })

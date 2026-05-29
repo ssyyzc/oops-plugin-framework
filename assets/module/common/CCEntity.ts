@@ -214,6 +214,7 @@ export abstract class CCEntity extends ecs.Entity {
     }
 
     on(eventName: string,  listener: ListenerFunc, object: object) {
+        this.off(eventName, listener, object)
         oops.message.on(this.eid + "_" + eventName, listener, object);
     }
 

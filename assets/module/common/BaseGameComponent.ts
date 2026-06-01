@@ -98,6 +98,7 @@ export class BaseGameComponent extends Component {
 
     /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */
     nodeTreeInfoLite() {
+        if (this.nodes && this.nodes.size > 0) return;
         this.nodes = new Map();
         ViewUtil.nodeTreeInfoLite(this.node, this.nodes);
     }
@@ -366,7 +367,12 @@ export class BaseGameComponent extends Component {
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
+    private _buttonInited: boolean = false;
+
     protected setButton(bindRootEvent: boolean = false) {
+        if (this._buttonInited) return;
+        this._buttonInited = true;
+
         // 自定义按钮批量绑定触摸事件
         if (bindRootEvent) {
             this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {

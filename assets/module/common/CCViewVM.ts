@@ -76,7 +76,12 @@ export abstract class CCViewVM<T extends CCEntity> extends VMParent implements e
         ent.add(this, true)
         //更新显示VM
         this.updateVM()
+        // 通知子类实体已切换，用于刷新数据驱动的界面
+        this.onEntityChanged()
     }
+
+    /** changeEntity 后由框架调用，子类覆写以刷新实体数据驱动的 UI */
+    protected onEntityChanged(): void {}
 
     private updateVM(){
         // 解除全部引用

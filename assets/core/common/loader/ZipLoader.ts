@@ -11,6 +11,9 @@ import { resLoader } from "./ResLoader";
 export class ZipLoader {
     private static zips: Map<string, JSZip> = new Map();
 
+    static getZip(name: string): JSZip | null {
+        return this.zips.get(name) || null;
+    }
     /**
      * 加载ZIP资源包
      * @param url 

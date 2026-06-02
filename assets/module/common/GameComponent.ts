@@ -11,6 +11,7 @@ import { smc } from "db://assets/script/game/common/SingletonModuleComp";
 import { PanelStyle } from "db://assets/script/component/Style/PanelStyle";
 import { UnlockItem } from "db://assets/script/gui/unlock/UnlockItem";
 import { ToggleStyle } from "db://assets/script/component/Style/ToggleStyle";
+import { FuncBtnComp } from "db://assets/script/gui/unlock/view/FuncBtnComp";
 
 const { ccclass } = _decorator;
 
@@ -64,6 +65,11 @@ export class GameComponent extends BaseGameComponent {
 
     onToggleSub(tog: number, toggle: ToggleStyle){
 
+    }
+
+    addFuncBtn(node : Node, id : number, key : number){
+        let fun = node.addComponent(FuncBtnComp)
+        fun.setUnlockId(id, key)
     }
 
     btn_wenhao(){

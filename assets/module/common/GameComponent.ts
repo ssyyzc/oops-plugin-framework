@@ -67,7 +67,7 @@ export class GameComponent extends BaseGameComponent {
 
     }
 
-    addFuncBtn(node : Node, id : number, key : number){
+    addFunc1Btn(node : Node, id : number, key : number){
         let fun = node.addComponent(FuncBtnComp)
         fun.setUnlockId(id, key)
     }

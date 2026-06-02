@@ -3,6 +3,9 @@ import { UIConfig } from "./layer/UIConfig";
 
 var configs: UIConfigMap = {};
 
+/** unlock_id → ViewComp ctor 反向索引 */
+const unlockIdToCtor: Map<number, any> = new Map();
+
 export namespace gui {
     /** 注册界面组件 */
     export function register(key: string, config: UIConfig) {
@@ -10,7 +13,15 @@ export namespace gui {
             //@ts-ignore
             ctor[gui.internal.GUI_KEY] = key;
             internal.setConfig(key, config);
+            if (config.unlock_id) {
+                unlockIdToCtor.set(config.unlock_id, ctor);
+            }
         };
+    }
+
+    /** 通过 unlock_id 获取注册的界面组件类 */
+    export function getByUnlockId(unlock_id: number): any | undefined {
+        return unlockIdToCtor.get(unlock_id);
     }
 
     /** 框架内部使用方法 */

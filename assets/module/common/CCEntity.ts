@@ -13,6 +13,7 @@ import { CCViewVM } from "./CCViewVM";
 import { ListenerFunc } from "../../core/common/event/EventMessage";
 import { GameComponent } from "./GameComponent";
 import { EffectSingleCase } from "../../libs/animator-effect/EffectSingleCase";
+import { smc } from "db://assets/script/game/common/SingletonModuleComp";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
@@ -119,8 +120,15 @@ export abstract class CCEntity extends ecs.Entity {
                     if(comp.onAdded) comp.onAdded(params?.data)
                 }
 
-                // let gc = (comp as unknown as GameComponent);
-                // gc.setUnlockItem(gc.getUnlockItemByClassName());
+                // 通过 @gui.register 的 unlock_id 自动绑定 UnlockItem
+                const config = gui.internal.getConfig(key);
+                if (config && config.unlock_id) {
+                    let unlockItem = smc.unlock.getItem(config.unlock_id);
+                    if (unlockItem) {
+                        let gc = (comp as unknown as GameComponent);
+                        gc.setUnlockItem(unlockItem);
+                    }
+                }
 
                 this.add(comp);
                 oops.gui.show(key);

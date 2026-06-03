@@ -12,6 +12,7 @@ import { PanelStyle } from "db://assets/script/component/Style/PanelStyle";
 import { UnlockItem } from "db://assets/script/gui/unlock/UnlockItem";
 import { ToggleStyle } from "db://assets/script/component/Style/ToggleStyle";
 import { FuncBtnComp } from "db://assets/script/gui/unlock/view/FuncBtnComp";
+import { CCEntity } from "./CCEntity";
 
 const { ccclass } = _decorator;
 
@@ -67,9 +68,16 @@ export class GameComponent extends BaseGameComponent {
 
     }
 
-    addFunc1Btn(node : Node, id : number, key : number){
-        let fun = node.addComponent(FuncBtnComp)
+    addFuncBtn(node : Node, id : number, key ?: number, entity ?: CCEntity){
+        let fun = node.getComponent(FuncBtnComp)
+        if(!fun){
+            fun = node.addComponent(FuncBtnComp)
+        }
         fun.setUnlockId(id, key)
+
+        if(entity){
+            fun.setEntity(entity)
+        }
     }
 
     btn_wenhao(){

@@ -38,6 +38,7 @@ export class VMBase extends Component {
      */
     onLoad() {
         if (VMEnv.editor) return;
+        if(!this.watchPath && this.watchPathArr.length <= 0) return;
 
         // 提前拆分、并且解析路径
         let paths = this.watchPath.split('.');
@@ -85,6 +86,11 @@ export class VMBase extends Component {
         if (this.watchPath == '' && this.watchPathArr.join('') == '') {
             log('可能未设置路径的节点:', this.node.parent!.name + '.' + this.node.name);
         }
+    }
+
+    setWatchPath(watchPath : string){
+        this.watchPath = watchPath
+        this.onLoad()
     }
 
     onEnable() {

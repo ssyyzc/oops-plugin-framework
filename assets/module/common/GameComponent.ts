@@ -13,6 +13,8 @@ import { UnlockItem } from "db://assets/script/gui/unlock/UnlockItem";
 import { ToggleStyle } from "db://assets/script/component/Style/ToggleStyle";
 import { FuncBtnComp } from "db://assets/script/gui/unlock/view/FuncBtnComp";
 import { CCEntity } from "./CCEntity";
+import { FuncHintComp } from "db://assets/script/gui/unlock/view/FuncHintComp";
+import { ListenerFunc } from "../../core/common/event/EventMessage";
 
 const { ccclass } = _decorator;
 
@@ -68,6 +70,10 @@ export class GameComponent extends BaseGameComponent {
 
     }
 
+    onItemUpdate(id: number, listener: ListenerFunc, object: any){
+        this.on("item_" + id, listener, object)
+    }
+
     addFuncBtn(node : Node, id : number, key ?: number, entity ?: CCEntity){
         let fun = node.getComponent(FuncBtnComp)
         if(!fun){
@@ -77,6 +83,19 @@ export class GameComponent extends BaseGameComponent {
 
         if(entity){
             fun.setEntity(entity)
+        }
+    }
+
+    addFuncHint(node : Node, id : number, key ?: number, entity ?: CCEntity){
+        let hit = node.getComponentInChildren(FuncHintComp)
+        if(!hit){
+            let n = this.createPrefabNode("common/prefab/hitN")
+            hit = n.getComponent(FuncHintComp)!
+            hit.setFuncId(id, key)
+            n.parent = node
+            hit.updatePos()
+        }else{
+            hit.setFuncId(id, key)
         }
     }
 

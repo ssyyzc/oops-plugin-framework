@@ -86,7 +86,7 @@ export class GameComponent extends BaseGameComponent {
         }
     }
 
-    addFuncHint(node : Node, id : number, key ?: number, entity ?: CCEntity){
+    addFuncHint(node : Node, id : number, key ?: number){
         let hit = node.getComponentInChildren(FuncHintComp)
         if(!hit){
             let n = this.createPrefabNode("common/prefab/hitN")

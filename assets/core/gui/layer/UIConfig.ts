@@ -50,6 +50,7 @@ export interface UIConfig {
 
     /** 功能解锁 id（对应 UnlockId 枚举，注册后可通过 gui.getByUnlockId 查询） */
     unlock_id?: number;
+    unlock_ids?: number[];
 }
 
 /** 游戏元素配置 */

@@ -15,6 +15,10 @@ export namespace gui {
             internal.setConfig(key, config);
             if (config.unlock_id) {
                 unlockIdToCtor.set(config.unlock_id, ctor);
+            }else if(config.unlock_ids){
+                config.unlock_ids.forEach(id => {
+                    unlockIdToCtor.set(id, ctor);
+                })
             }
         };
     }

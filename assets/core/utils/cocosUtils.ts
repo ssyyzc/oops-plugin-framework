@@ -1129,6 +1129,21 @@ export const cocosUtil = {
             let ch = node.children[i];
             this.blNode(ch, cb);
         }
+    },
+
+    printNode(node : Node, log : string){
+        if(!node){
+            console.log("错误", this)
+            return
+        }
+
+        let str = node.name
+        while(node.parent){
+            str = node.parent.name + "->" + str
+            node = node.parent
+        }
+
+        console.log(log, ": ", str)
     }
 }
 

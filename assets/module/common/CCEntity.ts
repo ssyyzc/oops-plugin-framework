@@ -84,7 +84,7 @@ export abstract class CCEntity extends ecs.Entity {
     }
 
 
-    async addPrefabPoolAsync<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string,param : {pos ?: Vec3, scale ?: number}, bundleName: string = resLoader.defaultBundleName) {
+    async addPrefabPoolAsync<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
         let eid = this.eid
         let node = await EffectSingleCase.instance.loadAndShow(path, null!, {bundleName : bundleName})
         if (!this.isValid || this.eid != eid) {
@@ -95,8 +95,6 @@ export abstract class CCEntity extends ecs.Entity {
         let comp = node.addComponent(ctor as any)
         this.add(comp as any);
         node.parent = parent;
-        if(param.pos) node.position = param.pos
-        if(param.scale !== undefined) node.scale_xyz = param.scale
         return node
     }
 

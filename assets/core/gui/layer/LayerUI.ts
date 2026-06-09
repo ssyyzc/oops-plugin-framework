@@ -70,7 +70,7 @@ export class LayerUI extends Node {
         if (state == null) {
             if (config.bundle == null) config.bundle = resLoader.defaultBundleName;
             if (config.destroy == null) config.destroy = true;
-            if (config.vacancy == null) config.vacancy = false;
+            if (config.vacancy == null) config.vacancy = true;
             if (config.mask == null) config.mask = false;
             if (config.safeArea == null) config.safeArea = false;
 

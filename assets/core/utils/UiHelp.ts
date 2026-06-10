@@ -21,17 +21,27 @@ export class UiHelp {
             this._SetSpriteFrame(node, paths, undefined, bundle)
         }else{
             if(paths[1]){
+                let bundle = oops.res.defaultBundleName
                 let atlasPath = paths[0]
                 let imgPath = paths[1]
-                oops.res.load(atlasPath, SpriteAtlas, null, (err: Error, atlas: SpriteAtlas) => {
-                    if (err) {
-                        console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
-                        return;
-                    }
-
-                    atlas.addRef();
-                    this._SetSpriteFrame(node, atlas, imgPath, bundle)
-                })
+                if(paths.length == 3){  //三个变量第一个必定为 bundle
+                    bundle = paths[0]
+                    atlasPath = paths[1]
+                    imgPath = paths[2]
+                }
+                if(!atlasPath){
+                    this._SetSpriteFrame(node, imgPath, undefined, bundle)
+                }else{
+                    oops.res.load(bundle, atlasPath, SpriteAtlas, null, (err: Error, atlas: SpriteAtlas) => {
+                        if (err) {
+                            console.error(`加载【${`${atlasPath}`}】的 图片 资源不存在`, node?.name);
+                            return;
+                        }
+    
+                        atlas.addRef();
+                        this._SetSpriteFrame(node, atlas, imgPath, bundle)
+                    })
+                }
             }else{
                 this._SetSpriteFrame(node, paths[0], undefined, bundle)
             }

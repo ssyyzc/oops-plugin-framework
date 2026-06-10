@@ -14,6 +14,7 @@ import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from 
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { Toggle } from "cc";
 import { TimerManager } from "../../core/common/timer/TimerManager";
+import { BundleType } from "db://assets/script/game/account/model/AccountEnum";
 
 const { ccclass } = _decorator;
 
@@ -438,7 +439,7 @@ export class BaseGameComponent extends Component {
                 }
 
                 if (playAudio) {
-                    oops.audio.playEffect('sound/btn_click');
+                    oops.audio.playEffect('sound/btn_click', {bundle : BundleType.BundleAfter});
                 }
 
                 this.canTouch = false;

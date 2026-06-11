@@ -88,7 +88,7 @@ export class LayerNotify extends Node {
         toastCom.toast(content, useI18n);
 
         // 超过3个提示，就施放第一个提示
-        if (this.notify.children.length > 3) {
+        if (this.notify.children.length > 10) {
             this.notify.children[0].destroy();
         }
     }

@@ -14,24 +14,24 @@ export class TweenUtil {
      * @returns 
      */
 
-    static to(node: Node, duration: number, props: __private._cocos_tween_tween__ConstructorType<Node>, opts?: ITweenOption<Node> | undefined){
-        return new Promise((resolve, reject) => {
-            tween(node)
-            .to(duration, props, opts)
-            .call(() => {
-                resolve(null)
-            })
-            .start()
-        })
-    }
+    // static to(node: Node, duration: number, props: __private._cocos_tween_tween__ConstructorType<Node>, opts?: ITweenOption<Node> | undefined){
+    //     return new Promise((resolve, reject) => {
+    //         tween(node)
+    //         .to(duration, props, opts)
+    //         .call(() => {
+    //             resolve(null)
+    //         })
+    //         .start()
+    //     })
+    // }
 
-    static execAsync(tweens : Tween){
-        return new Promise((resolve, reject) => {
-            tweens
-            .call(() => {
-                resolve(null)
-            })
-            .start()
-        })
-    }
+    // static execAsync(tweens : Tween){
+    //     return new Promise((resolve, reject) => {
+    //         tweens
+    //         .call(() => {
+    //             resolve(null)
+    //         })
+    //         .start()
+    //     })
+    // }
 }

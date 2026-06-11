@@ -601,16 +601,20 @@ export class BaseGameComponent extends Component {
     protected onGameOrientation(): void { }
     //#endregion
 
-    //用于等待时间，和界面绑定，这样界面销毁时，这个定时器也会自动终止
+    private _sleepRejects: Array<(reason: Error) => void> = []
+
     /**
-     * 等待时间
+     * 等待时间，界面销毁时自动 reject
      * @param s 秒
      */
-    sleep(s : number){
-        return new Promise((resolve, reject) => {
+    sleep(s : number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             this.scheduleOnce(() => {
-                resolve(null)
+                const idx = this._sleepRejects.indexOf(reject)
+                if (idx >= 0) this._sleepRejects.splice(idx, 1)
+                resolve()
             }, s)
+            this._sleepRejects.push(reject)
         })
     }
 
@@ -666,6 +670,12 @@ export class BaseGameComponent extends Component {
     }
 
     protected onDestroy() {
+        const tasks = this._sleepRejects
+        this._sleepRejects = []
+        for (const reject of tasks) {
+            reject(new Error('Component destroyed'))
+        }
+
         // 释放消息对象
         if (this._event) {
             this._event.destroy();

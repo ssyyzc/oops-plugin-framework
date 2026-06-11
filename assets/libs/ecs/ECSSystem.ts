@@ -98,14 +98,14 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         if (this.enteredEntities.size > 0) {
             var entities = this.enteredEntities.values();
             for (let entity of entities) {
-                (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
+                this._safeEntityEnter(entity);
             }
             this.enteredEntities.clear();
         }
 
         // 只执行firstUpdate
         for (let entity of this.group.matchEntities) {
-            (this as unknown as ecs.ISystemFirstUpdate).firstUpdate(entity);
+            this._safeFirstUpdate(entity);
         }
 
         this.execute = this.tmpExecute!;
@@ -113,10 +113,50 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         this.tmpExecute = null;
     }
 
+    private _safeFirstUpdate(entity: E) {
+        try {
+            const result: any = (this as unknown as ecs.ISystemFirstUpdate).firstUpdate(entity);
+            if (result instanceof Promise) {
+                result.catch((e: Error) => {
+                    if (e.message !== 'Component destroyed') throw e;
+                });
+            }
+        } catch (e: any) {
+            if (e.message !== 'Component destroyed') throw e;
+        }
+    }
+
+    private _safeEntityEnter(entity: E) {
+        try {
+            const result: any = (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
+            if (result instanceof Promise) {
+                result.catch((e: Error) => {
+                    if (e.message !== 'Component destroyed') throw e;
+                });
+            }
+        } catch (e: any) {
+            if (e.message !== 'Component destroyed') throw e;
+        }
+    }
+
+    private _safeEntityRemove(entity: E) {
+        try {
+            const result: any = (this as unknown as ecs.IEntityRemoveSystem).entityRemove(entity);
+            if (result instanceof Promise) {
+                result.catch((e: Error) => {
+                    if (e.message !== 'Component destroyed') throw e;
+                });
+            }
+        } catch (e: any) {
+            if (e.message !== 'Component destroyed') throw e;
+        }
+    }
+
+
     /**
      * 只执行update
-     * @param dt 
-     * @returns 
+     * @param dt
+     * @returns
      */
     private execute0(dt: number): void {
         if (this.group.count === 0) return;
@@ -142,7 +182,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
             if (this.hasEntityRemove) {
                 entities = this.removedEntities.values();
                 for (let entity of entities) {
-                    (this as unknown as ecs.IEntityRemoveSystem).entityRemove(entity);
+                    this._safeEntityRemove(entity);
                 }
             }
             this.removedEntities.clear();
@@ -157,7 +197,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
             if (this.hasEntityEnter) {
                 entities = this.enteredEntities!.values();
                 for (let entity of entities) {
-                    (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
+                    this._safeEntityEnter(entity);
                 }
             }
             this.enteredEntities!.clear();

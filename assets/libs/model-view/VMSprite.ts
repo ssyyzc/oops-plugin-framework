@@ -3,6 +3,7 @@ import { oops } from '../../core/Oops';
 import { VMBase } from './VMBase';
 import { VMEnv } from './VMEnv';
 import { UiHelp } from '../../core/utils/UiHelp';
+import { ResComponent } from '../../module/common/ResComponent';
 
 const { ccclass, property, menu, executeInEditMode } = _decorator;
 
@@ -28,8 +29,12 @@ export default class VMSprite extends VMBase {
     onRestore() {
         this.checkLabel();
     }
-
+    _resM : ResComponent = null!
     onLoad() {
+        if(!this._resM){
+            this._resM = this.node.addComponent(ResComponent)
+        }
+
         super.onLoad();
         this.checkLabel();
 
@@ -54,7 +59,11 @@ export default class VMSprite extends VMBase {
 
     setLabelValue(path: string) {
         var self = this;
-        UiHelp.SetSpriteFrame(this.node, path)
+
+        // let r = this.node.getComponent(ResComponent)
+        // if(!r)
+        // this.node.addComponent(ResComponent)
+        this._resM.setSpriteFrame(this.node, path)
         // if(path.indexOf("http") >= 0){
         //     if (path.slice(path.length - 4) == ".png") {
         //         // 远程 url 带图片后缀名

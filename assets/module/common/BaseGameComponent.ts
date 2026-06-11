@@ -4,37 +4,19 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
+import { Asset, Button, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, _decorator, input } from "cc";
 import { oops } from "../../core/Oops";
 import { AudioEffect } from "../../core/common/audio/AudioEffect";
 import { IAudioParams } from "../../core/common/audio/IAudio";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
-import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { Toggle } from "cc";
 import { TimerManager } from "../../core/common/timer/TimerManager";
 import { BundleType } from "db://assets/script/game/account/model/AccountEnum";
+import { ResComponent, ResType } from "./ResComponent";
 
 const { ccclass } = _decorator;
-
-/** 加载资源类型 */
-enum ResType {
-    Load,
-    LoadDir
-}
-
-/** 资源加载记录 */
-interface ResRecord {
-    /** 资源包名 */
-    bundle: string,
-    /** 资源路径 */
-    path: string,
-    /** 引用计数 */
-    refCount: number,
-    /** 资源编号 */
-    resId?: number
-}
 
 /**
  * 游戏显示对象组件模板
@@ -42,7 +24,7 @@ interface ResRecord {
  * 2、当前对象支持启动游戏引擎提供的各种常用逻辑事件
  */
 @ccclass("BaseGameComponent")
-export class BaseGameComponent extends Component {
+export class BaseGameComponent extends ResComponent {
     //#region 全局事件管理
     private _event: EventDispatcher | null = null;
     /** 全局事件管理器 */
@@ -123,211 +105,6 @@ export class BaseGameComponent extends Component {
             let node = ViewUtil.createPrefabNode(path, bundleName);
             resolve(node);
         });
-    }
-    //#endregion
-
-    //#region 资源加载管理
-    /** 资源路径 */
-    private resPaths: Map<ResType, Map<string, ResRecord>> = null!;             // 资源使用记录
-
-    /**
-     * 获取资源
-     * @param path          资源路径
-     * @param type          资源类型
-     * @param bundleName    远程资源包名
-     */
-    getRes<T extends Asset>(path: string, type?: __private.__types_globals__Constructor<T> | null, bundleName?: string): T | null {
-        return oops.res.get(path, type, bundleName);
-    }
-
-    /**
-     * 添加资源使用记录
-     * @param type          资源类型
-     * @param bundleName    资源包名
-     * @param paths         资源路径
-     */
-    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
-        if (this.resPaths == null) this.resPaths = new Map();
-
-        var rps = this.resPaths.get(type);
-        if (rps == null) {
-            rps = new Map();
-            this.resPaths.set(type, rps);
-        }
-
-        if (paths instanceof Array) {
-            let realBundle = bundleName;
-            for (let index = 0; index < paths.length; index++) {
-                let realPath = paths[index];
-                let key = this.getResKey(realBundle, realPath);
-                let rp = rps.get(key);
-                if (rp) {
-                    rp.refCount++;
-                }
-                else {
-                    rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
-                }
-            }
-        }
-        else if (typeof paths === "string") {
-            let realBundle = bundleName;
-            let realPath = paths;
-            let key = this.getResKey(realBundle, realPath);
-            let rp = rps.get(key);
-            if (rp) {
-                rp.refCount++;
-            }
-            else {
-                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
-            }
-        }
-        else {
-            let realBundle = oops.res.defaultBundleName;
-            let realPath = bundleName;
-            let key = this.getResKey(realBundle, realPath);
-            let rp = rps.get(key);
-            if (rp) {
-                rp.refCount++;
-            }
-            else {
-                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
-            }
-        }
-    }
-
-    private getResKey(realBundle: string, realPath: string): string {
-        let key = `${realBundle}:${realPath}`;
-        return key;
-    }
-
-    /**
-     * 加载一个资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
-     * @param type          资源类型
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
-     */
-    load<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(bundleName: string, paths: Paths, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(bundleName: string, paths: Paths, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(
-        bundleName: string,
-        paths?: Paths | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback,
-        onProgress?: ProgressCallback | CompleteCallback,
-        onComplete?: CompleteCallback,
-    ) {
-        this.addPathToRecord(ResType.Load, bundleName, paths);
-        oops.res.load(bundleName, paths, type, onProgress, onComplete);
-    }
-
-    /**
-     * 异步加载一个资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
-     * @param type          资源类型
-     */
-    loadAsync<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string, paths: Paths): Promise<T>;
-    loadAsync<T extends Asset>(paths: Paths, type: AssetType<T>): Promise<T>;
-    loadAsync<T extends Asset>(paths: Paths): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string,
-        paths?: Paths | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback): Promise<T> {
-        this.addPathToRecord(ResType.Load, bundleName, paths);
-        return oops.res.loadAsync(bundleName, paths, type);
-    }
-
-    /**
-     * 加载文件夹中的资源
-     * @param bundleName    远程包名
-     * @param dir           文件夹名
-     * @param type          资源类型
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
-     */
-    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(
-        bundleName: string,
-        dir?: string | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback,
-        onProgress?: ProgressCallback | CompleteCallback,
-        onComplete?: CompleteCallback,
-    ) {
-        let realDir: string;
-        let realBundle: string;
-        if (typeof dir === "string") {
-            realDir = dir;
-            realBundle = bundleName;
-        }
-        else {
-            realDir = bundleName;
-            realBundle = oops.res.defaultBundleName;
-        }
-
-        this.addPathToRecord(ResType.LoadDir, realBundle, realDir);
-        oops.res.loadDir(bundleName, dir, type, onProgress, onComplete);
-    }
-
-    /** 释放资源 */
-    release() {
-        if (this.resPaths) {
-            const rps = this.resPaths.get(ResType.Load);
-            if (rps) {
-                rps.forEach((value: ResRecord) => {
-                    for (let i = 0; i < value.refCount; i++) {
-                        oops.res.release(value.path, value.bundle);
-                    }
-                });
-                rps.clear();
-            }
-        }
-    }
-
-    /** 释放文件夹的资源 */
-    releaseDir() {
-        if (this.resPaths) {
-            const rps = this.resPaths.get(ResType.LoadDir);
-            if (rps) {
-                rps.forEach((value: ResRecord) => {
-                    oops.res.releaseDir(value.path, value.bundle);
-                });
-            }
-        }
-    }
-
-    /**
-     * 设置图片资源
-     * @param target  目标精灵对象
-     * @param path    图片资源地址
-     * @param bundle  资源包名
-     */
-    async setSprite(target: Sprite, path: string, bundle: string = resLoader.defaultBundleName) {
-        const spriteFrame = await this.loadAsync(bundle, path, SpriteFrame);
-        if (!spriteFrame || !isValid(target)) {
-            const rps = this.resPaths.get(ResType.Load);
-            if (rps) {
-                const key = this.getResKey(bundle, path);
-                rps.delete(key);
-                oops.res.release(path, bundle);
-            }
-            return;
-        }
-        spriteFrame.addRef();
-        target.spriteFrame = spriteFrame;
     }
     //#endregion
 
@@ -692,11 +469,6 @@ export class BaseGameComponent extends Component {
         }
 
         // 自动释放资源
-        if (this.resPaths) {
-            this.release();
-            this.releaseDir();
-            this.resPaths.clear();
-            this.resPaths = null!;
-        }
+        super.onDestroy();
     }
 }

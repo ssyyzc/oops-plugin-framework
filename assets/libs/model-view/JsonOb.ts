@@ -35,13 +35,25 @@ export class JsonOb<T> {
         this._callback = callback;
         this.observe(obj);
     }
-    
-    destory(){
+
+    destory() {
+        const cb = this._callback;
+        const obj = this.$data;
+
         //@ts-ignore
-        this.$data[DATA_CALLBACK_FUNC] = this.$data[DATA_CALLBACK_FUNC].filter(item => item !== this._callback);
+        const arr = obj[DATA_CALLBACK_FUNC] as Function[] | undefined;
+        if (arr) {
+            const idx = arr.indexOf(cb);
+            if (idx !== -1) arr.splice(idx, 1);
+            if (arr.length === 0) {
+                //@ts-ignore
+                delete obj[DATA_CALLBACK_FUNC];
+            }
+        }
     }
+
     public $data: T;
-    private _callback;
+    private _callback: Function;
 
     /**对象属性劫持 */
     private observe<T>(obj: T, path?: any) {
@@ -90,7 +102,7 @@ export class JsonOb<T> {
             // @ts-ignore
             if (OP.toString.call(obj[key]) === types.obj || OP.toString.call(obj[key]) === types.array) {
                 // @ts-ignore
-                this.observe(obj[key], pathArray);
+                // this.observe(obj[key], pathArray);
             }
         }, this)
     }

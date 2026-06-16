@@ -137,15 +137,15 @@ export class Root extends Component {
         oops.ecs.init();
 
         // 游戏显示事件
-        game.on(Game.EVENT_SHOW, this.onShow, this);
+        game.on(Game.EVENT_SHOW, this.onShow.bind(this, "game"), this);
         // 游戏隐藏事件
-        game.on(Game.EVENT_HIDE, this.onHide, this);
+        game.on(Game.EVENT_HIDE, this.onHide.bind(this, "game"), this);
 
 
         // 游戏显示事件
-        game.on("yzh_resume", this.onShow, this);
+        game.on("yzh_resume", this.onShow.bind(this, "yzh"), this);
         // 游戏隐藏事件
-        game.on("yzh_pause", this.onHide, this);
+        game.on("yzh_pause", this.onHide.bind(this, "yzh"), this);
 
         // 游戏尺寸修改事件
         if (!sys.isMobile) {
@@ -163,7 +163,13 @@ export class Root extends Component {
         }, this);
     }
 
-    private onShow() {
+    _showHide : any = {}
+    private onShow(type : string) {
+        delete this._showHide[type]
+        for(let i in this._showHide){   //需要都符合，才resume
+            if(this._showHide[i]) return
+        }
+
         console.log("oops onShow")
         oops.timer.load();              // 处理回到游戏时减去逝去时间
         oops.audio.resumeAll();         // 恢复所有暂停的音乐播放
@@ -172,7 +178,9 @@ export class Root extends Component {
         oops.message.dispatchEvent(EventMessage.GAME_SHOW);
     }
 
-    private onHide() {
+    private onHide(type : string) {
+        this._showHide[type] = 1
+
         console.log("oops onHide")
         oops.timer.save();             // 处理切到后台后记录切出时间
         oops.audio.pauseAll();         // 暂停所有音乐播放

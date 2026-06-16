@@ -1,4 +1,4 @@
-import { instantiate, Node, Prefab, SafeArea } from "cc";
+import { BlockInputEvents, instantiate, Node, Prefab, SafeArea, UITransform } from "cc";
 import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
@@ -261,9 +261,17 @@ export class LayerUI extends Node {
             },
             // 节点删除动画
             onBeforeRemove: (node, next) => {
+                // let rect = node.getComponent(UITransform)!;
+                // let mask = new Node();
+                // mask.name = '__block_input_mask';
+                // mask.addComponent(BlockInputEvents);
+                // let maskTrans = mask.addComponent(UITransform);
+                // maskTrans.setContentSize(rect.contentSize);
+                // mask.setParent(node);
                 tween(node)
                     .to(0.2, { scale: new Vec3(0.8, 0.8, 0.8) }, { easing: 'backIn' })
                     .call(() => {
+                        // mask.destroy();
                         next();
                     })
                     .start();

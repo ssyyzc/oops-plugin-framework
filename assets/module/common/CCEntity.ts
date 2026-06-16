@@ -85,9 +85,8 @@ export abstract class CCEntity extends ecs.Entity {
 
 
     async addPrefabPoolAsync<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
-        let eid = this.eid
         let node = await EffectSingleCase.instance.loadAndShow(path, null!, {bundleName : bundleName})
-        if (!this.isValid || this.eid != eid) {
+        if (!this.isValid) {
             EffectSingleCase.instance.put(node)
             return null
         }

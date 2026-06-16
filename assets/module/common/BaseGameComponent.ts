@@ -15,6 +15,7 @@ import { Toggle } from "cc";
 import { TimerManager } from "../../core/common/timer/TimerManager";
 import { BundleType } from "db://assets/script/game/account/model/AccountEnum";
 import { ResComponent, ResType } from "./ResComponent";
+import { find } from "cc";
 
 const { ccclass } = _decorator;
 
@@ -77,6 +78,10 @@ export class BaseGameComponent extends ResComponent {
             return this.nodes.get(name)!;
         }
         return undefined!;
+    }
+
+    find(path : string, node : Node){
+        return find(path, node)!
     }
 
     /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */

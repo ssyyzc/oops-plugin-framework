@@ -22,7 +22,9 @@ export enum LayerCustomType {
     /** 消息提示层 */
     Notify = "LayerNotify",
     /** 新手引导层 */
-    Guide = "LayerGuide"
+    Guide = "LayerGuide",
+    /** 引导特效层 */
+    GuideEffect = "LayerGuideEffect",
 }
 
 /** 界面层类型 */

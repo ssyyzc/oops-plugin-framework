@@ -21,6 +21,8 @@ export class LayerManager {
     game!: LayerGame;
     /** 新手引导层 */
     guide!: Node;
+    /** 新手引导层 */
+    guideEffect!: Node;
 
     /** 窗口宽高比例 */
     windowAspectRatio: number = 0;
@@ -80,6 +82,10 @@ export class LayerManager {
                     case LayerCustomType.Guide:
                         this.guide = this.create_node(data.name);
                         layer = this.guide;
+                        break
+                    case LayerCustomType.GuideEffect:
+                        this.guideEffect = this.create_node(data.name);
+                        layer = this.guideEffect;
                         break
                 }
             }

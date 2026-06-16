@@ -28,6 +28,15 @@ export namespace gui {
         return unlockIdToCtor.get(unlock_id);
     }
 
+    /**
+     * 主动注册unlock
+     * @param unlock_id 
+     * @param ctor 
+     */
+    export function registerUnlockId(unlock_id: number, ctor: any) {
+        unlockIdToCtor.set(unlock_id, ctor);
+    }
+
     /** 框架内部使用方法 */
     export namespace internal {
         /** 界面唯一标记变量名 */

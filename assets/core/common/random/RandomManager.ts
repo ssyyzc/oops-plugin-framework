@@ -78,7 +78,7 @@ export class RandomManager {
         return 0;
     }
 
-    getRandomBoolean() : Boolean {
+    getRandomBoolean() : boolean {
         return this.getRandomInt(0, 1) == 1
     }
 

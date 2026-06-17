@@ -45,15 +45,10 @@ export class EffectSingleCase {
     }
     set speed(value: number) {
         this._speed = value;
-        this.effects_use.forEach((value: Boolean, key: Node) => {
-            this.setSpeed(key);
-        });
     }
 
     /** 对象池集合 */
     private effects: Map<string, NodePool> = new Map();
-    /** 正在使用中的显示对象集合 */
-    private effects_use: Map<Node, boolean> = new Map();
     /** 对象池中用到的资源 - 这里只管理本对象加载的资源，预加载资源由其它对象自己施放 */
     private res: Map<string, string> = new Map();
 
@@ -170,28 +165,22 @@ export class EffectSingleCase {
             if (params.worldPos) node.worldPosition = params.worldPos;
         }
 
-
-        // 记录缓冲池中放出的节点
-        this.effects_use.set(node, true);
-
         return node;
     }
 
     /**
      * 回收对象
-     * @param name  预制对象名称
      * @param node  节点
      */
     put(node: Node) {
+        // 已销毁的节点不回收到池中，避免污染对象池
+        if (!node.isValid) return;
+
         //@ts-ignore
         const name = node.res_path;
         if (name) {
             const np = this.effects.get(name);
             if (np) {
-                // 回收使用的节点
-                this.effects_use.delete(node);
-
-                // 回到到池中
                 np.put(node);
             }
         }

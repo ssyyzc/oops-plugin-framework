@@ -127,7 +127,7 @@ export class UiHelp {
 
     public static SetLabel(node: Node | undefined | null, str: number | string | undefined){
         if (!node || !node.isValid) {
-            return console.error("Label节点不存在");
+            return console.warn("Label节点不存在");
         }
 
         if (typeof str === 'number') {
@@ -151,7 +151,7 @@ export class UiHelp {
      */
     public static SetLabelColor(node: Node | undefined, color: Color = new Color(255, 255, 255, 255)) {
         if (!node || !node.isValid) {
-            return console.error("Label节点不存在");
+            return console.warn("Label节点不存在");
         }
         if (node.getComponent(Label)) {
             node.getComponent(Label)!.color = color;

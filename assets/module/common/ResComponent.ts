@@ -283,8 +283,8 @@ export class ResComponent extends Component {
      * @param bundle  资源包名（paths为string时使用）
      */
     async setSpriteFrame(node: Node|null|undefined, paths: string[] | string, bundle: string = resLoader.defaultBundleName) {
-         if(!node){
-            console.error('SetSpriteFrame No Node!');
+        if(!node){
+            // console.error('SetSpriteFrame No Node!');
             return;
         }
         let target = node.getComponent(Sprite)

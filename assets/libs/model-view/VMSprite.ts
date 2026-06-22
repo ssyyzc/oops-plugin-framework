@@ -31,10 +31,6 @@ export default class VMSprite extends VMBase {
     }
     _resM : ResComponent = null!
     onLoad() {
-        if(!this._resM){
-            this._resM = this.node.addComponent(ResComponent)
-        }
-
         super.onLoad();
         this.checkLabel();
 
@@ -60,9 +56,14 @@ export default class VMSprite extends VMBase {
     setLabelValue(path: string) {
         var self = this;
 
+        if (VMEnv.editor) return;
         // let r = this.node.getComponent(ResComponent)
         // if(!r)
         // this.node.addComponent(ResComponent)
+
+        if(!this._resM){
+            this._resM = this.node.addComponent(ResComponent)
+        }
         this._resM.setSpriteFrame(this.node, path)
         // if(path.indexOf("http") >= 0){
         //     if (path.slice(path.length - 4) == ".png") {

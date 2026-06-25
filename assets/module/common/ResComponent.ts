@@ -197,7 +197,7 @@ export class ResComponent extends Component {
             if (rps) {
                 rps.forEach((value: ResRecord) => {
                     for (let i = 0; i < value.refCount; i++) {
-                        console.log("ResComponent 开始释放资源", value.path, value.bundle)
+                        // console.log("ResComponent 开始释放资源", value.path, value.bundle)
                         oops.res.release(value.path, value.bundle);
                     }
                 });

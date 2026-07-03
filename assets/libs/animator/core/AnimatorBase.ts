@@ -140,7 +140,11 @@ export default class AnimatorBase extends Component {
      */
     protected initJson(json: any) {
         this._ac = new AnimatorController(this, json);
+        this.params_fun.forEach(fn => fn());
+        this.params_fun = [];
     }
+
+    params_fun : Function[] = []
 
     /**
      * 动画结束的回调
@@ -189,49 +193,69 @@ export default class AnimatorBase extends Component {
      * 设置boolean类型参数的值
      */
     public setBool(key: string, value: boolean) {
-        this._ac.params.setBool(key, value);
+        if(this._ac){
+            this._ac.params.setBool(key, value);
+        }else{
+            this.params_fun.push(() => this.setBool(key, value))
+        }
     }
 
     /**
      * 获取boolean类型参数的值
      */
     public getBool(key: string): boolean {
-        return this._ac.params.getBool(key) !== 0;
+        return this._ac ? this._ac.params.getBool(key) !== 0 : false;
     }
 
     /**
      * 设置number类型参数的值
      */
     public setNumber(key: string, value: number) {
-        this._ac.params.setNumber(key, value);
+        if(this._ac){
+            this._ac.params.setNumber(key, value);
+        }else{
+            this.params_fun.push(() => this.setNumber(key, value))
+        }
     }
 
     /**
      * 获取number类型参数的值
      */
     public getNumber(key: string): number {
-        return this._ac.params.getNumber(key);
+        return this._ac ? this._ac.params.getNumber(key) : 0;
     }
 
     /**
      * 设置trigger类型参数的值
      */
     public setTrigger(key: string) {
-        this._ac.params.setTrigger(key);
+        if(this._ac){
+            this._ac.params.setTrigger(key);
+        }else{
+            this.params_fun.push(() => this.setTrigger(key))
+        }
     }
 
     /**
      * 重置trigger类型参数的值
      */
     public resetTrigger(key: string) {
-        this._ac.params.resetTrigger(key);
+        if(this._ac){
+            this._ac.params.resetTrigger(key);
+        }else{
+            this.params_fun.push(() => this.resetTrigger(key))
+        }
     }
 
     /**
      * 设置autoTrigger类型参数的值（autoTrigger类型参数不需要主动reset，每次状态机更新结束后会自动reset）
      */
     public autoTrigger(key: string) {
-        this._ac.params.autoTrigger(key);
+        if(this._ac){
+            this._ac.params.autoTrigger(key);
+        }else{
+            this.params_fun.push(() => this.autoTrigger(key))
+        }
     }
 
     /**

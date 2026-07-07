@@ -205,7 +205,7 @@ export class TimerManager extends Component {
                 this.onTimerComplete(data);
             }
             else {
-                data.object[data.field] = 0;
+                // data.object[data.field] = 0;
             }
         }
     }

@@ -391,6 +391,10 @@ export class BaseGameComponent extends ResComponent {
      */
     sleep(s : number): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            if(s <= 0) {
+                resolve()
+                return
+            }
             this.scheduleOnce(() => {
                 const idx = this._sleepRejects.indexOf(reject)
                 if (idx >= 0) this._sleepRejects.splice(idx, 1)

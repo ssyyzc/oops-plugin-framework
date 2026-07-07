@@ -31,6 +31,8 @@ class StringFormat {
                 case 'ms': res = this.time_ms(value); break;
                 case 'hms': res = this.time_hms(value); break;
                 case 'hmss': res = this.time_hmss(value); break;
+                case 'cd': res = this.time_cd(value); break;
+                case 'cdhms': res = this.time_cdhms(value); break;
 
                 default: break;
             }
@@ -51,6 +53,23 @@ class StringFormat {
     private sep(value: number) {
         let num = Math.round(value).toString();
         return num.replace(new RegExp('(\\d)(?=(\\d{3})+$)', 'ig'), "$1,");
+    }
+
+    /** 将毫秒数转为倒计时格式 00:00 显示 （分:秒） */
+    private time_cd(value: number) {
+        let totalSeconds = Math.floor(value / 1000);
+        let m = Math.floor(totalSeconds / 60);
+        let s = totalSeconds % 60;
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    /** 将毫秒数转为倒计时格式 00:00:00 显示 （时:分:秒） */
+    private time_cdhms(value: number) {
+        let totalSeconds = Math.floor(value / 1000);
+        let h = Math.floor(totalSeconds / 3600);
+        let m = Math.floor((totalSeconds % 3600) / 60);
+        let s = totalSeconds % 60;
+        return (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
     }
 
     /** 将数字按分显示 00:00 显示 （分:秒） */

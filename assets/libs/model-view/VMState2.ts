@@ -158,6 +158,10 @@ export default class VMState2 extends VMBase {
         }
     }
 
+    //测试代码测试代码
+    test2(){
+
+    }
 
     test(path : string){
         let paths = path.split('.');

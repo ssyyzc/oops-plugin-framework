@@ -174,7 +174,6 @@ export default class VMState2 extends VMBase {
 
         // 替换掉原路径
         let watchPath = paths.join('.');
-        console.log("watchPath", watchPath, path, paths)
         return watchPath;
 
         // 提前进行路径数组 的 解析

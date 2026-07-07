@@ -21,6 +21,7 @@ export interface IEffectParams {
     isPlayFinishedRelease?: boolean,
     /** 资源包名 */
     bundleName?: string
+    scale_xyz?: number,
 }
 
 /**
@@ -163,6 +164,7 @@ export class EffectSingleCase {
         if (params) {
             if (params.pos) node.position = params.pos;
             if (params.worldPos) node.worldPosition = params.worldPos;
+            if (params.scale_xyz) node.scale_xyz = params.scale_xyz
         }
 
         return node;
